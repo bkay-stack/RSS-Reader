@@ -76,24 +76,24 @@ Deploy to a live, publicly accessible URL.
 
 ## Performance Targets
 
-| Metric | Target |
-|--------|--------|
-| Landing page Time to Interactive | < 2 seconds |
-| Initial feed load (after auth) | < 3 seconds |
-| Search results | < 500ms |
-| Scrolling through 100+ items | Smooth (60fps, no jank) |
-| Individual feed refresh | < 5 seconds |
-| Layout shift during load | Minimal (use skeletons/placeholders) |
+| Metric                           | Target                               |
+| -------------------------------- | ------------------------------------ |
+| Landing page Time to Interactive | < 2 seconds                          |
+| Initial feed load (after auth)   | < 3 seconds                          |
+| Search results                   | < 500ms                              |
+| Scrolling through 100+ items     | Smooth (60fps, no jank)              |
+| Individual feed refresh          | < 5 seconds                          |
+| Layout shift during load         | Minimal (use skeletons/placeholders) |
 
 ### Lighthouse Benchmarks
 
 Run Lighthouse on your deployed site. Target scores:
 
-| Category | Target |
-|----------|--------|
-| Performance | > 85 |
-| Accessibility | > 90 |
-| Best Practices | > 90 |
+| Category       | Target |
+| -------------- | ------ |
+| Performance    | > 85   |
+| Accessibility  | > 90   |
+| Best Practices | > 90   |
 
 Include your Lighthouse scores in your README.
 

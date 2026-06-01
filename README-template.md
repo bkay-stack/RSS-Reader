@@ -1,4 +1,4 @@
-# Frontpage — [Your Name]
+# Frontpage — [kevin]
 
 A customizable content aggregator that pulls RSS and Atom feeds into one well-designed reading dashboard.
 
@@ -16,14 +16,14 @@ A customizable content aggregator that pulls RSS and Atom feeds into one well-de
 
 <!-- List your technology choices -->
 
-| Layer | Technology |
-|-------|-----------|
-| Framework | e.g. Next.js 15 |
-| Database | |
-| Authentication | |
-| Hosting | |
-| Styling | |
-| Other | |
+| Layer          | Technology      |
+| -------------- | --------------- |
+| Framework      | e.g. Next.js 15 |
+| Database       |                 |
+| Authentication |                 |
+| Hosting        |                 |
+| Styling        |                 |
+| Other          |                 |
 
 ---
 
@@ -92,10 +92,10 @@ These are the product and design choices I made where the spec left room for int
 <!-- How did you structure your working sessions? What did you accomplish in each? Add rows for however many sessions you worked across. -->
 
 | Session | Focus | What I Accomplished |
-|---------|-------|-------------------|
-| 1 | | |
-| 2 | | |
-| 3 | | |
+| ------- | ----- | ------------------- |
+| 1       |       |                     |
+| 2       |       |                     |
+| 3       |       |                     |
 
 ---
 
@@ -145,30 +145,30 @@ These are the product and design choices I made where the spec left room for int
 
 Rate your implementation honestly. This self-awareness is part of the portfolio artifact.
 
-| Category | Rating | Notes |
-|----------|--------|-------|
-| **Works for real users** — Deployed, functional end-to-end | /5 | |
-| **Feed parsing robustness** — Handles format variations, errors, edge cases | /5 | |
-| **Design-it-yourself features** — Quality and thoughtfulness of onboarding, digest, and layout solutions | /5 | |
-| **Design quality** — Typography, spacing, visual hierarchy, polish | /5 | |
-| **Responsive design** — Fully functional and well-designed across devices | /5 | |
-| **Performance** — Fast load, smooth scrolling, efficient caching | /5 | |
-| **Accessibility** — Keyboard nav, screen reader support, contrast | /5 | |
-| **Edge case handling** — Empty states, errors, loading, large datasets | /5 | |
-| **Code quality** — Clean, maintainable, well-structured | /5 | |
-| **Landing page** — Compelling, communicates value, visually polished | /5 | |
-| **Guest experience** — Immediately impressive, real content, full features | /5 | |
+| Category                                                                                                 | Rating | Notes |
+| -------------------------------------------------------------------------------------------------------- | ------ | ----- |
+| **Works for real users** — Deployed, functional end-to-end                                               | /5     |       |
+| **Feed parsing robustness** — Handles format variations, errors, edge cases                              | /5     |       |
+| **Design-it-yourself features** — Quality and thoughtfulness of onboarding, digest, and layout solutions | /5     |       |
+| **Design quality** — Typography, spacing, visual hierarchy, polish                                       | /5     |       |
+| **Responsive design** — Fully functional and well-designed across devices                                | /5     |       |
+| **Performance** — Fast load, smooth scrolling, efficient caching                                         | /5     |       |
+| **Accessibility** — Keyboard nav, screen reader support, contrast                                        | /5     |       |
+| **Edge case handling** — Empty states, errors, loading, large datasets                                   | /5     |       |
+| **Code quality** — Clean, maintainable, well-structured                                                  | /5     |       |
+| **Landing page** — Compelling, communicates value, visually polished                                     | /5     |       |
+| **Guest experience** — Immediately impressive, real content, full features                               | /5     |       |
 
 ### Lighthouse Scores
 
 <!-- Run Lighthouse on your deployed site and record the scores -->
 
-| Category | Score |
-|----------|-------|
-| Performance | |
-| Accessibility | |
-| Best Practices | |
-| SEO | |
+| Category       | Score |
+| -------------- | ----- |
+| Performance    |       |
+| Accessibility  |       |
+| Best Practices |       |
+| SEO            |       |
 
 ### Strengths
 
@@ -207,8 +207,8 @@ npm run dev
 ### Environment Variables
 
 | Variable | Description |
-|----------|------------|
-| | |
+| -------- | ----------- |
+|          |             |
 
 ---
 
