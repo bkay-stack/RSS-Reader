@@ -2,40 +2,62 @@
 @import "../starter/tokens.css";
 
 @theme inline {
+  /* Background Colors */
   --color-bg-primary: var(--color-bg-primary);
   --color-bg-secondary: var(--color-bg-secondary);
   --color-bg-tertiary: var(--color-bg-tertiary);
+
+  /* Surface Colors */
   --color-surface: var(--color-surface);
+
+  /* Border Colors */
   --color-border: var(--color-border);
   --color-border-subtle: var(--color-border-subtle);
+
+  /* Text Colors */
   --color-text-primary: var(--color-text-primary);
   --color-text-secondary: var(--color-text-secondary);
   --color-text-tertiary: var(--color-text-tertiary);
+
+  /* Brand / Accent Colors */
   --color-accent: var(--color-accent);
   --color-accent-hover: var(--color-accent-hover);
   --color-accent-subtle: var(--color-accent-subtle);
+
+  /* Status Colors */
   --color-success: var(--color-success);
   --color-warning: var(--color-warning);
   --color-error: var(--color-error);
+
+  /* RSS Feed State */
   --color-unread: var(--color-unread-indicator);
+
+  /* Shadows */
   --shadow-sm: var(--shadow-sm);
   --shadow-md: var(--shadow-md);
   --shadow-lg: var(--shadow-lg);
 }
 
 @theme {
+  /* Typography */
   --font-sans: "Inter", system-ui, -apple-system, sans-serif;
   --font-serif: "Georgia", "Charter", serif;
   --font-mono: "JetBrains Mono", "SF Mono", "Fira Code", monospace;
+
+  /* Font Weights */
   --font-weight-regular: var(--font-regular);
   --font-weight-medium: var(--font-medium);
   --font-weight-semibold: var(--font-semibold);
   --font-weight-bold: var(--font-bold);
+
+  /* Border Radius */
   --radius-sm: 0.25rem;
   --radius-md: 0.5rem;
   --radius-lg: 0.75rem;
   --radius-xl: 1rem;
   --radius-full: 9999rem;
+
+  /* Layout Dimensions */
   --spacing-sidebar: 16.25rem;
   --container-content: 45rem;
   --container-feed: 60rem;
