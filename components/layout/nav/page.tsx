@@ -4,9 +4,8 @@ import Link from "next/link";
 
 const Nav = () => {
   return (
-    <nav className="flex items-center  w-full px-6 h-14 border-b border-border bg-surface sticky top-0 z-50">
+    <nav className="flex items-center justify-center  w-full px-6 h-14 border-b border-border bg-surface sticky top-0 z-50">
       <Logo />
-      <div className="flex items-center gap-3"></div>
     </nav>
   );
 };
