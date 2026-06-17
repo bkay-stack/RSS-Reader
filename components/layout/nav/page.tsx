@@ -1,6 +1,6 @@
 import React from "react";
 import Logo from "@/components/branding/logo";
-import Link from "next/link";
+// import Link from "next/link";
 
 const Nav = () => {
   return (

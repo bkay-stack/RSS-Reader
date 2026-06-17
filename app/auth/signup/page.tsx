@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { FiMail, FiLock, FiEye, FiEyeOff, FiUser } from "react-icons/fi";
+import { FiMail, FiLock, FiEye, FiUser } from "react-icons/fi";
 import { FcGoogle } from "react-icons/fc";
 import { FiGithub } from "react-icons/fi";
 import Nav from "@/components/layout/nav/page";
