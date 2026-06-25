@@ -4,7 +4,7 @@ import { FcGoogle } from "react-icons/fc";
 import { FiGithub } from "react-icons/fi";
 import Nav from "@/components/layout/nav/page";
 
-export default function SignUpPage() {
+export default function SignUpPage({}) {
   return (
     <div>
       <Nav />
@@ -22,6 +22,7 @@ export default function SignUpPage() {
           </div>
 
           {/* Form */}
+
           <form className="flex flex-col gap-4 ">
             {/* Full name */}
             <div className="flex flex-col gap-1">
