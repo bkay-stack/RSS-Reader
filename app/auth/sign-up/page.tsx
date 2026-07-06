@@ -9,6 +9,11 @@ import { useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { TSignUpSchema, signupSchema } from "@/lib/validation/auth.schema";
+import {
+  signUpWithEmail,
+  signInWithGoogle,
+  signInWithGithub,
+} from "@/lib/supabase/auth.service";
 
 function getPasswordStrength(password: string): number {
   if (!password) return 0;
@@ -45,8 +50,9 @@ const strengthConfig = {
 
 export default function SignUpPage() {
   const [showPassword, setShowPassword] = useState(false);
-  // const [isValid, setIsValid] = useState(false);
-  // Destructure control alongside the rest
+  const [authError, setAuthError] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+
   const {
     register,
     handleSubmit,
@@ -57,29 +63,50 @@ export default function SignUpPage() {
     resolver: zodResolver(signupSchema),
   });
 
-  // Watch password live
   const passwordValue = useWatch({
     control,
     name: "password",
     defaultValue: "",
   });
+
   const strength = getPasswordStrength(passwordValue);
   const { label, colors } =
     strengthConfig[strength as keyof typeof strengthConfig];
 
   const onSubmit = async (data: TSignUpSchema) => {
-    // TODO: replace with supabase.auth.signUp()
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-    console.log(data);
+    setAuthError(null);
+    setSuccessMessage(null);
+
+    const { data: result, error } = await signUpWithEmail(data);
+
+    if (error) {
+      setAuthError(error);
+      return;
+    }
+
+    setSuccessMessage(
+      result?.message ?? "Check your email to confirm your account.",
+    );
     reset();
   };
+
+  const handleGoogle = async () => {
+    setAuthError(null);
+    const { error } = await signInWithGoogle();
+    if (error) setAuthError(error);
+  };
+
+  const handleGithub = async () => {
+    setAuthError(null);
+    const { error } = await signInWithGithub();
+    if (error) setAuthError(error);
+  };
+
   return (
     <div>
       <Nav />
-      <main className="min-h-screen bg-bg-secondary flex flex-col items-center justify-center px-4  ">
-        {/* Card */}
+      <main className="min-h-screen bg-bg-secondary flex flex-col items-center justify-center px-4">
         <div className="w-full max-w-md bg-surface border border-border rounded-xl shadow-md p-8">
-          {/* Header */}
           <div className="mb-6">
             <h1 className="text-2xl font-bold text-text-primary">
               Create your account
@@ -89,11 +116,23 @@ export default function SignUpPage() {
             </p>
           </div>
 
-          {/* Form */}
+          {/* Auth error */}
+          {authError && (
+            <div className="mb-4 p-3 rounded-md bg-error/10 border border-error">
+              <p className="text-xs text-error">{authError}</p>
+            </div>
+          )}
+
+          {/* Success message */}
+          {successMessage && (
+            <div className="mb-4 p-3 rounded-md bg-success/10 border border-success">
+              <p className="text-xs text-success">{successMessage}</p>
+            </div>
+          )}
 
           <form
             onSubmit={handleSubmit(onSubmit)}
-            className="flex flex-col gap-4 ">
+            className="flex flex-col gap-4">
             {/* Full name */}
             <div className="flex flex-col gap-1">
               <label className="text-xs font-semibold text-text-secondary uppercase tracking-wide">
@@ -163,15 +202,11 @@ export default function SignUpPage() {
                   {showPassword ? <FiEyeOff size={15} /> : <FiEye size={15} />}
                 </button>
               </div>
-
-              {/* Error — sits outside the relative div so it's not overlapped */}
               {errors.password && (
                 <p className="text-xs text-error mt-1">
                   {errors.password.message}
                 </p>
               )}
-
-              {/* Strength bar — only show when user has typed something */}
               {passwordValue && (
                 <>
                   <div className="flex gap-1 mt-1">
@@ -193,12 +228,10 @@ export default function SignUpPage() {
               type="submit"
               disabled={isSubmitting}
               className="w-full bg-accent hover:bg-accent-hover disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-semibold py-2.5 rounded-md transition-colors mt-2">
-              {" "}
               {isSubmitting ? "Creating account..." : "Create account"}
             </button>
           </form>
 
-          {/* Divider */}
           <div className="flex items-center gap-3 my-5">
             <div className="flex-1 h-px bg-border" />
             <span className="text-xs text-text-tertiary">or continue with</span>
@@ -207,17 +240,20 @@ export default function SignUpPage() {
 
           {/* Social buttons */}
           <div className="flex gap-3">
-            <button className="flex-1 flex items-center justify-center gap-2 border border-border rounded-md py-2.5 text-sm text-text-primary hover:bg-bg-secondary transition-colors">
+            <button
+              onClick={handleGoogle}
+              className="flex-1 flex items-center justify-center gap-2 border border-border rounded-md py-2.5 text-sm text-text-primary hover:bg-bg-secondary transition-colors">
               <FcGoogle size={16} />
               Google
             </button>
-            <button className="flex-1 flex items-center justify-center gap-2 border border-border rounded-md py-2.5 text-sm text-text-primary hover:bg-bg-secondary transition-colors">
+            <button
+              onClick={handleGithub}
+              className="flex-1 flex items-center justify-center gap-2 border border-border rounded-md py-2.5 text-sm text-text-primary hover:bg-bg-secondary transition-colors">
               <FiGithub size={16} />
               GitHub
             </button>
           </div>
 
-          {/* Terms */}
           <p className="text-xs text-text-tertiary text-center mt-4 leading-relaxed">
             By creating an account you agree to our{" "}
             <Link href="/terms" className="text-accent hover:text-accent-hover">
@@ -231,7 +267,6 @@ export default function SignUpPage() {
             </Link>
           </p>
 
-          {/* Footer */}
           <p className="text-sm text-text-secondary text-center mt-6">
             Already have an account?{" "}
             <Link
@@ -245,3 +280,5 @@ export default function SignUpPage() {
     </div>
   );
 }
+
+// export default SignUpPage;

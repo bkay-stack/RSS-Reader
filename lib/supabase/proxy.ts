@@ -27,6 +27,7 @@ export async function updateSession(request: NextRequest) {
     },
   );
 
+  // Check if user is signed ins
   const { data } = await supabase.auth.getClaims();
   const user = data?.claims;
 
@@ -34,7 +35,9 @@ export async function updateSession(request: NextRequest) {
     !user &&
     !request.nextUrl.pathname.startsWith("/auth/sign-in") &&
     !request.nextUrl.pathname.startsWith("/auth/sign-up") &&
-    !request.nextUrl.pathname.startsWith("/auth/reset-password")
+    !request.nextUrl.pathname.startsWith("/auth/reset-password") &&
+    !request.nextUrl.pathname.startsWith("/auth/callback") &&
+    !request.nextUrl.pathname.startsWith("/auth/confirm")
   ) {
     const url = request.nextUrl.clone();
     url.pathname = "/auth/sign-in";
