@@ -11,7 +11,7 @@ export default function LandingPage() {
         <Logo />
         <div className="flex items-center gap-3">
           <Link
-            href="/auth/signin"
+            href="/auth/sign-in"
             className="text-sm text-text-secondary hover:text-text-primary transition-colors">
             Sign in
           </Link>
@@ -40,7 +40,7 @@ export default function LandingPage() {
         {/* CTAs */}
         <div className="flex flex-col md:flex-row gap-3 w-full max-w-sm md:max-w-none md:w-auto">
           <Link
-            href="/auth/signup"
+            href="/auth/sign-up"
             className="bg-accent hover:bg-accent-hover text-white text-sm font-semibold py-3 px-8 rounded-md transition-colors text-center">
             Get Started Free →
           </Link>
