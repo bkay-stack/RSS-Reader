@@ -1,25 +1,13 @@
 import ProgressTracker from "@/components/onboarding/progress-tracker";
 import Link from "next/link";
-import {
-  Code2,
-  Palette,
-  Cloud,
-  ShieldCheck,
-  Smartphone,
-  Briefcase,
-  Sparkles,
-  Server,
-} from "lucide-react";
+import { Code2, Palette, Server, Newspaper, Sparkles } from "lucide-react";
 
 const topics = [
   { id: "frontend", label: "Frontend", icon: Code2 },
-  { id: "backend", label: "Backend", icon: Server },
   { id: "design", label: "Design", icon: Palette },
+  { id: "backend-devops", label: "Backend & DevOps", icon: Server },
+  { id: "general-tech", label: "General Tech", icon: Newspaper },
   { id: "ai-ml", label: "AI & ML", icon: Sparkles },
-  { id: "devops", label: "Cloud & DevOps", icon: Cloud },
-  { id: "security", label: "Security", icon: ShieldCheck },
-  { id: "mobile", label: "Mobile", icon: Smartphone },
-  { id: "career", label: "Career", icon: Briefcase },
 ];
 
 export default function OnboardingStep1Page() {
