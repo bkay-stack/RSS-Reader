@@ -4,7 +4,7 @@ import Link from "next/link";
 import { FiMail, FiLock, FiEye, FiUser, FiEyeOff } from "react-icons/fi";
 import { FcGoogle } from "react-icons/fc";
 import { FiGithub } from "react-icons/fi";
-import Nav from "@/components/layout/nav/page";
+import Nav from "@/components/shared/nav/page";
 import { useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";

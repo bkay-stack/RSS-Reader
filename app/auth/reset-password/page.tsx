@@ -1,4 +1,4 @@
-import Nav from "@/components/layout/nav/page";
+import Nav from "@/components/shared/nav/page";
 import { Lock } from "lucide-react";
 
 export default function ResetPassword() {

@@ -1,5 +1,5 @@
 import { FiMail, FiLock, FiEye, FiGithub } from "react-icons/fi";
-import Nav from "@/components/layout/nav/page";
+import Nav from "@/components/shared/nav/page";
 import { FcGoogle } from "react-icons/fc";
 
 export default function SignInPage() {

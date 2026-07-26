@@ -1,7 +1,7 @@
 import Logo from "@/components/branding/logo";
 import Link from "next/link";
 import { FiRss } from "react-icons/fi";
-import Footer from "@/components/layout/footer/page";
+import Footer from "@/components/shared/footer/page";
 
 export default function LandingPage() {
   return (
