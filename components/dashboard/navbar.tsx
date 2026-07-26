@@ -27,7 +27,7 @@ export default function DashboardNavbar() {
         </ul>
       </div>
 
-      <div className="flex items-center gap-3">
+      {/* <div className="flex items-center gap-3">
         <div className="hidden md:flex items-center gap-2 rounded border border-border px-3 py-1.5 text-sm text-text-tertiary">
           <Search size={16} />
           <span>Search articles...</span>
@@ -42,6 +42,21 @@ export default function DashboardNavbar() {
         <div className="h-9 w-9 rounded-full bg-accent-subtle text-accent flex items-center justify-center text-sm font-medium">
           MS
         </div>
+      </div> */}
+
+      {/* Search bar */}
+      <div className="hidden md:flex items-center gap-2  px-3 py-1.5 text-sm text-text-tertiary">
+        <form
+          action="/dashboard/search"
+          className="hidden md:flex items-center gap-2 rounded border border-border px-3 py-1.5 text-sm text-text-tertiary focus-within:border-accent focus-within:text-text-primary transition-colors">
+          <Search size={16} className="shrink-0" />
+          <input
+            type="search"
+            name="q"
+            placeholder="Search articles..."
+            className="bg-transparent outline-none placeholder:text-text-tertiary text-text-primary w-40"
+          />
+        </form>
       </div>
     </nav>
   );
