@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "../starter/tokens.css";
+@source "../**/*.{ts,tsx}";
 
 @theme inline {
   /* Background Colors */
