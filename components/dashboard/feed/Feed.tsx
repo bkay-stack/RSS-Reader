@@ -44,7 +44,7 @@ const fakeItems: ArticleItem[] = [
     isSaved: false,
   },
   {
-    id: "1",
+    id: "4",
     title: "Practical Guide To Designing For Colorblind Users",
     excerpt:
       "Color blindness affects roughly 8% of men and 0.5% of women worldwide. Here's how to design interfaces that work for everyone.",
@@ -59,7 +59,7 @@ const fakeItems: ArticleItem[] = [
     isSaved: false,
   },
   {
-    id: "2",
+    id: "5",
     title: "How We Reduced P99 Latency by 60% with Edge-First Caching",
     excerpt:
       "Our engineering team spent the last quarter rethinking how we cache at the edge. The result: dramatically lower tail latency.",
@@ -71,7 +71,7 @@ const fakeItems: ArticleItem[] = [
     isSaved: false,
   },
   {
-    id: "3",
+    id: "6",
     title: "The Surprising Truth About CSS Container Queries",
     excerpt:
       "Container queries have been available for a while, but most developers are still using them like media queries.",
