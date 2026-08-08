@@ -1,4 +1,6 @@
-type NewItemsBannerProps = {
+import { ArrowUp } from "lucide-react";
+
+export type NewItemsBannerProps = {
   count: number;
   onRefresh: () => void;
 };
@@ -12,7 +14,8 @@ export default function NewItemsBanner({
   return (
     <button
       onClick={onRefresh}
-      className="flex items-center justify-center gap-2 w-full py-4 text-sm text-accent bg-accent-subtle hover:bg-accent-subtle/80 rounded cursor-pointer">
+      className="flex items-center justify-center gap-2 w-full py-2 text-sm text-accent bg-accent-subtle hover:bg-accent-subtle/80 rounded cursor-pointer">
+      <ArrowUp size={16} />
       {count} new item{count !== 1 ? "s" : ""} since your last visit
     </button>
   );
