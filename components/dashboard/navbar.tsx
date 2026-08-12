@@ -1,7 +1,7 @@
 import Logo from "@/components/branding/logo";
 import MobileSidebarDrawer from "./MobileSidebarDrawer";
 import Link from "next/link";
-import { Search, Plus } from "lucide-react";
+import { Search } from "lucide-react";
 
 const navLinks = [
   { href: "/dashboard", label: "Feed" },
