@@ -1,6 +1,11 @@
 import { fetchFeedXML } from "./fetchFeed";
 import { detectFeedFormat } from "./detectFeedFormat";
-import { parseRSSFeed, parseAtomFeed, type FeedSourceMeta } from "./parseFeed";
+import {
+  parseRSSFeed,
+  parseAtomFeed,
+  parseRDFFeed,
+  type FeedSourceMeta,
+} from "./parseFeed";
 import type { ArticleItem } from "@/components/dashboard/feed/FeedItem";
 
 export type FeedFetchResult = {
@@ -9,14 +14,6 @@ export type FeedFetchResult = {
   error: string | null;
 };
 
-/**
- * Fetches a single feed URL, detects whether it's RSS or Atom, and parses
- * it into normalized ArticleItem[] data.
- *
- * Never throws — any failure (network error, malformed XML, unrecognized
- * format) is caught and returned as `{ items: [], error: "..." }` instead,
- * so one broken feed never crashes a batch fetch (see fetchAllFeeds.ts).
- */
 export async function fetchAndParseFeed(
   feedUrl: string,
   source: FeedSourceMeta,
@@ -36,7 +33,10 @@ export async function fetchAndParseFeed(
     const items =
       format === "atom"
         ? parseAtomFeed(xml, source)
-        : parseRSSFeed(xml, source);
+        : format === "rdf"
+          ? parseRDFFeed(xml, source)
+          : parseRSSFeed(xml, source);
+
     return { sourceName: source.name, items, error: null };
   } catch (err) {
     return {
