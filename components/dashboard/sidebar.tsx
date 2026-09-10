@@ -85,8 +85,8 @@ export default function DashboardSidebar() {
   };
 
   return (
-    <aside className="hidden md:flex flex-col h-screen w-16 lg:w-sidebar border-r border-border bg-bg-secondary transition-all">
-      <nav className="flex-1 overflow-y-auto p-2 lg:p-4">
+    <aside className="hidden md:flex flex-col h-full w-16 lg:w-sidebar border-r border-border bg-bg-secondary transition-all">
+      <nav className="flex-1 min-h-0 overflow-y-auto p-2 lg:p-4">
         <ul className="flex flex-col gap-1">
           {topNav.map(({ href, label, icon: Icon, count }) => (
             <li key={href}>
