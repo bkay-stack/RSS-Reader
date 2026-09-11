@@ -52,9 +52,7 @@ export async function getFeedItems(
       id: item.id,
       title: item.title,
       excerpt: item.excerpt ?? "",
-      // Links are re-checked on read (see lib/sanitizeUrl.ts). Rows stored
-      // before ingest sanitization may still hold `javascript:` URLs or
-      // relative links ("/posts/1"), which get completed with the site URL.
+      // Check links again: older saved rows may not be clean.
       url: sanitizeUrl(item.url, feed?.site_url),
       publishedAt: item.published_at ?? new Date().toISOString(),
       source: {

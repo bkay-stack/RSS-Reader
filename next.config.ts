@@ -1,33 +1,14 @@
 import type { NextConfig } from "next";
 
-/**
- * Security headers, sent with every response.
- *
- *   Content-Security-Policy   Which sources the browser may load scripts,
- *                             styles, images and connections from. Blocks
- *                             injected third-party scripts, <object> embeds
- *                             and <base> tag hijacks.
- *   X-Frame-Options           Stops other sites from putting this app in an
- *                             iframe (clickjacking). frame-ancestors in the
- *                             CSP does the same for modern browsers.
- *   X-Content-Type-Options    Stops browsers from guessing file types.
- *   Referrer-Policy           Other sites only see our origin, not full URLs.
- *   Permissions-Policy        Turns off camera, microphone and location.
- *   Strict-Transport-Security Browsers use HTTPS only (ignored on http://localhost).
- *
- * CSP notes
- *   - 'unsafe-inline' for scripts is needed because Next.js injects inline
- *     scripts. Moving to per-request nonces would remove it.
- *   - 'unsafe-eval' and ws: are only added in development (React Fast Refresh).
- *   - connect-src allows the Supabase project, which the browser talks to for
- *     sign-in/sign-up (https) and realtime (wss).
- *   - Fonts come from next/font, which self-hosts them, so 'self' is enough.
- */
+// Security headers sent with every page.
+// CSP limits where scripts, styles and connections can come from.
+// The others block iframes, file-type guessing, and camera/mic/location.
 
 const isDev = process.env.NODE_ENV === "development";
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
 const supabaseRealtime = supabaseUrl.replace(/^http/, "ws");
 
+// Next.js needs 'unsafe-inline'; 'unsafe-eval' and ws: are for dev only.
 const contentSecurityPolicy = [
   "default-src 'self'",
   `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""}`,
@@ -60,7 +41,7 @@ const nextConfig: NextConfig = {
   turbopack: {
     root: __dirname,
   },
-  // Don't advertise the framework in an `X-Powered-By: Next.js` header.
+  // Hide the "X-Powered-By: Next.js" header.
   poweredByHeader: false,
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }];

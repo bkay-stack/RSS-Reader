@@ -1,17 +1,5 @@
-/**
- * Feed parsing: raw RSS / Atom / RDF XML → ArticleItem[].
- *
- * Everything inside a feed is untrusted, so every field is cleaned HERE,
- * before it is stored in the database:
- *
- *   title    → cleanPlainText   decode character codes, keep the text as-is
- *   excerpt  → sanitizeText     strip all HTML, then cut to 200 characters
- *   url      → sanitizeUrl      http(s) only; relative links are completed
- *                               with the feed's site URL
- *
- * RSS and RDF items have the same shape and share mapRSSItem. Atom entries
- * are shaped differently and are mapped inline in parseAtomFeed.
- */
+// Turns RSS / Atom / RDF feed XML into articles.
+// Every field is cleaned here before it is saved (see sanitizeText and sanitizeUrl).
 
 import { XMLParser } from "fast-xml-parser";
 import type { ArticleItem } from "@/components/dashboard/feed/FeedItem";
@@ -22,7 +10,7 @@ import {
 } from "./sanitizeText";
 import { sanitizeUrl } from "@/lib/sanitizeUrl";
 
-// Raw shapes, as fast-xml-parser returns them
+// Raw feed data, as the XML parser returns it
 
 type RawRSSItem = {
   guid?: { "#text": string } | string;
@@ -47,19 +35,14 @@ type RawAtomEntry = {
   updated?: string;
 };
 
-// Attributes come back prefixed with "@_" (e.g. link["@_href"]), and
-// <![CDATA[...]]> blocks come back as { __cdata: "..." }.
+// "@_" marks attributes; CDATA comes back as { __cdata }.
 const parser = new XMLParser({
   ignoreAttributes: false,
   attributeNamePrefix: "@_",
   cdataPropName: "__cdata",
 });
 
-// Helpers
-
-// A text node can arrive as a plain string, as { "#text" } (when the element
-// also has attributes) or as { __cdata } (when wrapped in CDATA). Returns the
-// raw string in every case — it is NOT cleaned yet.
+// Gets the text out of a field, whatever shape the parser gave it.
 function extractText(
   field: { "#text": string } | { __cdata: string } | string | undefined,
 ): string {
@@ -104,15 +87,14 @@ export function parseAtomFeed(
   const entryArray = Array.isArray(entries) ? entries : [entries];
 
   return entryArray.map((entry: RawAtomEntry) => {
-    // An entry can have several <link>s; the "alternate" one is the article.
+    // The "alternate" link is the article.
     const links = Array.isArray(entry.link) ? entry.link : [entry.link];
     const alternateLink =
       links.find((l) => l?.["@_rel"] === "alternate") ?? links[0];
 
     const rawSummary = extractText(entry.summary) || extractText(entry.content);
 
-    // Atom summaries are often entity-encoded HTML (`&lt;p&gt;`), so decode
-    // first to expose the real tags, then let sanitizeText strip them.
+    // Atom summaries are often encoded HTML, so decode first, then clean.
     const decodedSummary = decodeHtmlEntities(rawSummary);
     const publishedDate = entry.published ?? entry.updated ?? null;
 
@@ -130,7 +112,7 @@ export function parseAtomFeed(
   });
 }
 
-// RDF (RSS 1.0) — items live under <rdf:RDF> but look like RSS items
+// RDF (same item shape as RSS)
 
 export function parseRDFFeed(
   xml: string,
@@ -142,12 +124,10 @@ export function parseRDFFeed(
   return itemArray.map((item: RawRSSItem) => mapRSSItem(item, source));
 }
 
-// Shared RSS / RDF mapping
-
 function mapRSSItem(item: RawRSSItem, source: FeedSourceMeta): ArticleItem {
   const rawDescription = extractText(item.description);
 
-  // Prefer the feed's own id; fall back to the link so upserts stay stable.
+  // Use the feed's id, or the link if there isn't one.
   const id =
     typeof item.guid === "object"
       ? item.guid["#text"]

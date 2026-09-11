@@ -78,8 +78,7 @@ export async function applyOnboardingSelection(
       onboarding_completed_at: new Date().toISOString(),
     });
 
-  // Not fatal (the feeds are already set up), but log it: this failed silently
-  // for a long time because the column was missing.
+  // Log it so this can't fail silently again.
   if (preferencesError) {
     console.error("user_preferences upsert failed:", preferencesError);
   }
