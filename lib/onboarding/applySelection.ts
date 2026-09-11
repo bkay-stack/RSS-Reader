@@ -71,10 +71,18 @@ export async function applyOnboardingSelection(
     return { failed: selectedCategoryNames };
   }
 
-  await supabase.from("user_preferences").upsert({
-    user_id: user.id,
-    onboarding_completed_at: new Date().toISOString(),
-  });
+  const { error: preferencesError } = await supabase
+    .from("user_preferences")
+    .upsert({
+      user_id: user.id,
+      onboarding_completed_at: new Date().toISOString(),
+    });
+
+  // Not fatal (the feeds are already set up), but log it: this failed silently
+  // for a long time because the column was missing.
+  if (preferencesError) {
+    console.error("user_preferences upsert failed:", preferencesError);
+  }
 
   return { failed };
 }

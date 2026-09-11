@@ -1,14 +1,12 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { safeNextPath } from "@/lib/validation/safeNextPath";
 
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get("code");
-  let next = searchParams.get("next") ?? "/onboarding/step-1";
-
-  if (!next.startsWith("/")) {
-    next = "/";
-  }
+  // Only same-site paths — blocks "?next=@evil.com" style open redirects.
+  const next = safeNextPath(searchParams.get("next"), "/onboarding/step-1");
 
   if (code) {
     const supabase = await createClient();
