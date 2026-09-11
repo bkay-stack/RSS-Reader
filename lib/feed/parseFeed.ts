@@ -1,9 +1,32 @@
+/**
+ * Feed parsing: raw RSS / Atom / RDF XML → ArticleItem[].
+ *
+ * Everything inside a feed is untrusted, so every field is cleaned HERE,
+ * before it is stored in the database:
+ *
+ *   title    → cleanPlainText   decode character codes, keep the text as-is
+ *   excerpt  → sanitizeText     strip all HTML, then cut to 200 characters
+ *   url      → sanitizeUrl      http(s) only; relative links are completed
+ *                               with the feed's site URL
+ *
+ * RSS and RDF items have the same shape and share mapRSSItem. Atom entries
+ * are shaped differently and are mapped inline in parseAtomFeed.
+ */
+
 import { XMLParser } from "fast-xml-parser";
 import type { ArticleItem } from "@/components/dashboard/feed/FeedItem";
+import {
+  cleanPlainText,
+  decodeHtmlEntities,
+  sanitizeText,
+} from "./sanitizeText";
+import { sanitizeUrl } from "@/lib/sanitizeUrl";
+
+// Raw shapes, as fast-xml-parser returns them
 
 type RawRSSItem = {
   guid?: { "#text": string } | string;
-  title?: string;
+  title?: { __cdata: string } | string;
   description?: { __cdata: string } | string;
   link?: string;
   pubDate?: string;
@@ -16,7 +39,7 @@ type RawAtomLink = {
 
 type RawAtomEntry = {
   id?: string;
-  title?: string;
+  title?: { "#text": string } | string;
   summary?: { "#text": string } | string;
   content?: { "#text": string } | string;
   link?: RawAtomLink | RawAtomLink[];
@@ -24,21 +47,19 @@ type RawAtomEntry = {
   updated?: string;
 };
 
+// Attributes come back prefixed with "@_" (e.g. link["@_href"]), and
+// <![CDATA[...]]> blocks come back as { __cdata: "..." }.
 const parser = new XMLParser({
   ignoreAttributes: false,
   attributeNamePrefix: "@_",
   cdataPropName: "__cdata",
 });
 
-function decodeHtmlEntities(text: string): string {
-  return text
-    .replace(/&lt;/g, "<")
-    .replace(/&gt;/g, ">")
-    .replace(/&amp;/g, "&")
-    .replace(/&quot;/g, '"')
-    .replace(/&#39;/g, "'");
-}
+// Helpers
 
+// A text node can arrive as a plain string, as { "#text" } (when the element
+// also has attributes) or as { __cdata } (when wrapped in CDATA). Returns the
+// raw string in every case — it is NOT cleaned yet.
 function extractText(
   field: { "#text": string } | { __cdata: string } | string | undefined,
 ): string {
@@ -46,10 +67,6 @@ function extractText(
     return ("#text" in field ? field["#text"] : field.__cdata) ?? "";
   }
   return field ?? "";
-}
-
-function stripHtml(html: string): string {
-  return html.replace(/<[^>]*>/g, "").trim();
 }
 
 function truncate(text: string, maxLength: number): string {
@@ -73,29 +90,11 @@ export function parseRSSFeed(
   const items = parsed?.rss?.channel?.item ?? [];
   const itemArray = Array.isArray(items) ? items : [items];
 
-  return itemArray.map((item: RawRSSItem) => {
-    const rawDescription = extractText(item.description);
-
-    const id =
-      typeof item.guid === "object"
-        ? item.guid["#text"]
-        : (item.guid ?? item.link ?? "");
-
-    return {
-      id,
-      title: decodeHtmlEntities(item.title ?? "Untitled"),
-      excerpt: truncate(stripHtml(rawDescription), 200),
-      url: item.link ?? "",
-      publishedAt: item.pubDate ? new Date(item.pubDate).toISOString() : null,
-      source: { name: source.name, siteUrl: source.siteUrl },
-      category: source.category,
-      isRead: false,
-      isSaved: false,
-    };
-  });
+  return itemArray.map((item: RawRSSItem) => mapRSSItem(item, source));
 }
 
 // Atom
+
 export function parseAtomFeed(
   xml: string,
   source: FeedSourceMeta,
@@ -105,20 +104,23 @@ export function parseAtomFeed(
   const entryArray = Array.isArray(entries) ? entries : [entries];
 
   return entryArray.map((entry: RawAtomEntry) => {
+    // An entry can have several <link>s; the "alternate" one is the article.
     const links = Array.isArray(entry.link) ? entry.link : [entry.link];
     const alternateLink =
       links.find((l) => l?.["@_rel"] === "alternate") ?? links[0];
 
     const rawSummary = extractText(entry.summary) || extractText(entry.content);
 
+    // Atom summaries are often entity-encoded HTML (`&lt;p&gt;`), so decode
+    // first to expose the real tags, then let sanitizeText strip them.
     const decodedSummary = decodeHtmlEntities(rawSummary);
     const publishedDate = entry.published ?? entry.updated ?? null;
 
     return {
       id: entry.id ?? alternateLink?.["@_href"] ?? "",
-      title: decodeHtmlEntities(entry.title ?? "Untitled"),
-      excerpt: truncate(stripHtml(decodedSummary), 200),
-      url: alternateLink?.["@_href"] ?? "",
+      title: cleanPlainText(extractText(entry.title)) || "Untitled",
+      excerpt: truncate(sanitizeText(decodedSummary), 200),
+      url: sanitizeUrl(alternateLink?.["@_href"], source.siteUrl),
       publishedAt: publishedDate ? new Date(publishedDate).toISOString() : null,
       source: { name: source.name, siteUrl: source.siteUrl },
       category: source.category,
@@ -127,7 +129,9 @@ export function parseAtomFeed(
     };
   });
 }
-// RDF
+
+// RDF (RSS 1.0) — items live under <rdf:RDF> but look like RSS items
+
 export function parseRDFFeed(
   xml: string,
   source: FeedSourceMeta,
@@ -138,9 +142,12 @@ export function parseRDFFeed(
   return itemArray.map((item: RawRSSItem) => mapRSSItem(item, source));
 }
 
+// Shared RSS / RDF mapping
+
 function mapRSSItem(item: RawRSSItem, source: FeedSourceMeta): ArticleItem {
   const rawDescription = extractText(item.description);
 
+  // Prefer the feed's own id; fall back to the link so upserts stay stable.
   const id =
     typeof item.guid === "object"
       ? item.guid["#text"]
@@ -148,9 +155,9 @@ function mapRSSItem(item: RawRSSItem, source: FeedSourceMeta): ArticleItem {
 
   return {
     id,
-    title: decodeHtmlEntities(item.title ?? "Untitled"),
-    excerpt: truncate(stripHtml(rawDescription), 200),
-    url: item.link ?? "",
+    title: cleanPlainText(extractText(item.title)) || "Untitled",
+    excerpt: truncate(sanitizeText(rawDescription), 200),
+    url: sanitizeUrl(item.link, source.siteUrl),
     publishedAt: item.pubDate ? new Date(item.pubDate).toISOString() : null,
     source: { name: source.name, siteUrl: source.siteUrl },
     category: source.category,

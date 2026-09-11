@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { sanitizeUrl } from "@/lib/sanitizeUrl";
 import type { ArticleItem } from "./FeedItem";
 
 function unwrap<T>(value: T | T[] | null | undefined): T | undefined {
@@ -51,11 +52,14 @@ export async function getFeedItems(
       id: item.id,
       title: item.title,
       excerpt: item.excerpt ?? "",
-      url: item.url ?? "",
+      // Links are re-checked on read (see lib/sanitizeUrl.ts). Rows stored
+      // before ingest sanitization may still hold `javascript:` URLs or
+      // relative links ("/posts/1"), which get completed with the site URL.
+      url: sanitizeUrl(item.url, feed?.site_url),
       publishedAt: item.published_at ?? new Date().toISOString(),
       source: {
         name: feed?.title ?? "",
-        siteUrl: feed?.site_url ?? "",
+        siteUrl: sanitizeUrl(feed?.site_url),
       },
       category: category?.name ?? "Uncategorized",
       isRead: item.user_item_state[0]?.is_read ?? false,
