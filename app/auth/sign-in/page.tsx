@@ -1,3 +1,6 @@
+// Sign-in page. Renders the form and shows any error the auth routes
+// pass back in ?error= (a failed OAuth or confirmation link).
+
 import Link from "next/link";
 import Nav from "@/components/shared/nav/page";
 import SignInForm from "./SignInForm";

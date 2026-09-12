@@ -1,5 +1,8 @@
 "use client";
 
+// The sign-up form: name, email + password, Google, or GitHub.
+// Email sign-up sends a confirmation link; then onboarding.
+
 import Link from "next/link";
 import { FiMail, FiLock, FiEye, FiUser, FiEyeOff } from "react-icons/fi";
 import { FcGoogle } from "react-icons/fc";
@@ -242,13 +245,13 @@ export default function SignUpPage() {
           <div className="flex gap-3">
             <button
               onClick={handleGoogle}
-              className="flex-1 flex items-center justify-center gap-2 border border-border rounded-md py-2.5 text-sm text-text-primary hover:bg-bg-secondary transition-colors">
+              className="flex-1 flex items-center justify-center gap-2 border border-border rounded-md py-2.5 text-sm text-text-primary hover:bg-bg-secondary transition-colors cursor-pointer">
               <FcGoogle size={16} />
               Google
             </button>
             <button
               onClick={handleGithub}
-              className="flex-1 flex items-center justify-center gap-2 border border-border rounded-md py-2.5 text-sm text-text-primary hover:bg-bg-secondary transition-colors">
+              className="flex-1 flex items-center justify-center gap-2 border border-border rounded-md py-2.5 text-sm text-text-primary hover:bg-bg-secondary transition-colors cursor-pointer">
               <FiGithub size={16} />
               GitHub
             </button>

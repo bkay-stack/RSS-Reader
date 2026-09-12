@@ -1,5 +1,8 @@
 "use client";
 
+// The sign-in form: email + password, Google, or GitHub.
+// On success the user lands on /dashboard.
+
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -21,7 +24,11 @@ function friendlyError(message: string): string {
     : message;
 }
 
-export default function SignInForm({ linkError }: { linkError: string | null }) {
+export default function SignInForm({
+  linkError,
+}: {
+  linkError: string | null;
+}) {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [authError, setAuthError] = useState<string | null>(linkError);
@@ -165,7 +172,7 @@ export default function SignInForm({ linkError }: { linkError: string | null }) 
           type="button"
           onClick={() => handleOAuth("google")}
           disabled={busy}
-          className="flex-1 flex items-center justify-center gap-2 border border-border rounded-md py-2.5 text-sm text-text-primary hover:bg-bg-secondary disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+          className="flex-1 flex items-center justify-center gap-2 border border-border rounded-md py-2.5 text-sm text-text-primary hover:bg-bg-secondary disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer">
           {oauthLoading === "google" ? "Opening..." : "Google"}
           <FcGoogle size={15} />
         </button>
@@ -173,7 +180,7 @@ export default function SignInForm({ linkError }: { linkError: string | null }) 
           type="button"
           onClick={() => handleOAuth("github")}
           disabled={busy}
-          className="flex-1 flex items-center justify-center gap-2 border border-border rounded-md py-2.5 text-sm text-text-primary hover:bg-bg-secondary disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+          className="flex-1 flex items-center justify-center gap-2 border border-border rounded-md py-2.5 text-sm text-text-primary hover:bg-bg-secondary disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer">
           {oauthLoading === "github" ? "Opening..." : "GitHub"}
           <FiGithub size={15} />
         </button>
