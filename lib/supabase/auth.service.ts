@@ -10,6 +10,13 @@ type AuthResult<T> = {
   error: string | null;
 };
 
+// Where the OAuth provider sends the user back. `next` is the page to land on
+// (the callback route only allows paths on this site).
+const callbackUrl = (next?: string) =>
+  `${window.location.origin}/auth/callback${
+    next ? `?next=${encodeURIComponent(next)}` : ""
+  }`;
+
 //  Sign Up
 export const signUpWithEmail = async (
   input: TSignUpSchema,
@@ -60,7 +67,14 @@ export const signInWithEmail = async (
       password: input.password,
     });
 
-    if (error) return { data: null, error: error.message };
+    // Generic on purpose — don't reveal which emails have accounts.
+    if (error) {
+      const message =
+        error.code === "email_not_confirmed"
+          ? "Please confirm your email first — check your inbox."
+          : "Invalid email or password.";
+      return { data: null, error: message };
+    }
 
     return { data: { message: "Signed in successfully." }, error: null };
   } catch {
@@ -69,14 +83,16 @@ export const signInWithEmail = async (
 };
 
 //  Google OAuth
-export const signInWithGoogle = async (): Promise<AuthResult<null>> => {
+export const signInWithGoogle = async (
+  next?: string,
+): Promise<AuthResult<null>> => {
   try {
     const supabase = createClient();
 
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: `${window.location.origin}/auth/callback`,
+        redirectTo: callbackUrl(next),
         queryParams: {
           access_type: "offline",
           prompt: "consent",
@@ -93,14 +109,16 @@ export const signInWithGoogle = async (): Promise<AuthResult<null>> => {
 };
 
 //  GitHub OAuth
-export const signInWithGithub = async (): Promise<AuthResult<null>> => {
+export const signInWithGithub = async (
+  next?: string,
+): Promise<AuthResult<null>> => {
   try {
     const supabase = createClient();
 
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "github",
       options: {
-        redirectTo: `${window.location.origin}/auth/callback`,
+        redirectTo: callbackUrl(next),
       },
     });
 
