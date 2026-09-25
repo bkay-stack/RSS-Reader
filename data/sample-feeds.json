@@ -71,10 +71,10 @@
         },
         {
           "title": "Figma Blog",
-          "feedUrl": "https://www.figma.com/blog/feed/",
+          "feedUrl": "https://www.figma.com/blog/feed/atom.xml",
           "siteUrl": "https://www.figma.com/blog/",
           "description": "Stories about how products are designed at Figma and beyond.",
-          "format": "rss2"
+          "format": "atom"
         },
         {
           "title": "A List Apart",
@@ -122,7 +122,7 @@
         },
         {
           "title": "Netlify Blog",
-          "feedUrl": "https://www.netlify.com/blog/index.xml",
+          "feedUrl": "https://www.netlify.com/feed.xml",
           "siteUrl": "https://www.netlify.com/blog/",
           "description": "News and posts from Netlify.",
           "format": "rss2"
