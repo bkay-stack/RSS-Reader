@@ -64,3 +64,11 @@
   --container-feed: 60rem;
   --container-page: 80rem;
 }
+
+/* Tailwind v4 dropped the hand cursor on buttons — bring it back. */
+@layer base {
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+}
