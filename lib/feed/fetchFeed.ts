@@ -1,5 +1,4 @@
-// Reads the bytes in the feed's own encoding (e.g. ISO-8859-1), not always
-// UTF-8. The <?xml encoding="…"?> line wins, then the server's charset header.
+// Decodes the feed in its own encoding (from <?xml encoding> or the header).
 function decodeFeed(bytes: ArrayBuffer, contentType: string | null): string {
   const start = new TextDecoder("latin1").decode(bytes.slice(0, 200));
   const charset =
@@ -10,7 +9,7 @@ function decodeFeed(bytes: ArrayBuffer, contentType: string | null): string {
   try {
     return new TextDecoder(charset).decode(bytes);
   } catch {
-    // Unknown encoding name → fall back to UTF-8.
+    // Unknown encoding → UTF-8.
     return new TextDecoder().decode(bytes);
   }
 }

@@ -37,8 +37,7 @@ export async function fetchAndParseFeed(
           ? parseRDFFeed(xml, source)
           : parseRSSFeed(xml, source);
 
-    // Drop items with no id (usually junk from broken XML) or a repeated id.
-    // Neither can be saved: the database tells items apart by id.
+    // Skip items with no id or a repeated id (they can't be saved).
     const seen = new Set<string>();
     const items = parsed.filter((item) => {
       if (!item.id || seen.has(item.id)) return false;
@@ -46,7 +45,7 @@ export async function fetchAndParseFeed(
       return true;
     });
 
-    // Zero items is a problem, not a success — say so instead of staying quiet.
+    // No items means something's wrong, so report it.
     if (items.length === 0) {
       return {
         sourceName: source.name,
