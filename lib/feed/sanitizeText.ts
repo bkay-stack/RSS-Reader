@@ -24,22 +24,29 @@
 
 import DOMPurify from "isomorphic-dompurify";
 
+// Named codes feeds commonly use. Number codes (&#8217; &#x2019;) are handled separately.
+const NAMED_ENTITIES: Record<string, string> = {
+  amp: "&", lt: "<", gt: ">", quot: '"', apos: "'", nbsp: " ",
+  mdash: "—", ndash: "–", hellip: "…", bull: "•", middot: "·",
+  lsquo: "‘", rsquo: "’", ldquo: "“", rdquo: "”", laquo: "«", raquo: "»",
+  copy: "©", reg: "®", trade: "™", times: "×",
+};
+
 /**
  * Turns HTML character codes back into the characters they stand for.
  *
- *   "Tom &amp; Jerry &lt;3"  →  "Tom & Jerry <3"
+ *   "Don&#8217;t &mdash; Tom &amp; Jerry"  →  "Don’t — Tom & Jerry"
  *
- * `&amp;` is replaced LAST, so "&amp;lt;" decodes once to the literal text
- * "&lt;" instead of being decoded twice into "<".
+ * One pass, so "&amp;lt;" decodes once to the text "&lt;", not twice to "<".
+ * Unknown codes are left as they are.
  */
 export function decodeHtmlEntities(text: string): string {
-  return text
-    .replace(/&lt;/g, "<")
-    .replace(/&gt;/g, ">")
-    .replace(/&quot;/g, '"')
-    .replace(/&#39;/g, "'")
-    .replace(/&nbsp;/g, " ")
-    .replace(/&amp;/g, "&");
+  return text.replace(/&(#\d+|#x[\da-f]+|[a-z][a-z\d]*);/gi, (match, code: string) => {
+    if (code[0] !== "#") return NAMED_ENTITIES[code] ?? match;
+    const isHex = code[1] === "x" || code[1] === "X";
+    const point = parseInt(code.slice(isHex ? 2 : 1), isHex ? 16 : 10);
+    return point > 0 && point <= 0x10ffff ? String.fromCodePoint(point) : match;
+  });
 }
 
 /**

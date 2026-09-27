@@ -30,12 +30,30 @@ export async function fetchAndParseFeed(
       };
     }
 
-    const items =
+    const parsed =
       format === "atom"
         ? parseAtomFeed(xml, source)
         : format === "rdf"
           ? parseRDFFeed(xml, source)
           : parseRSSFeed(xml, source);
+
+    // Drop items with no id (usually junk from broken XML) or a repeated id.
+    // Neither can be saved: the database tells items apart by id.
+    const seen = new Set<string>();
+    const items = parsed.filter((item) => {
+      if (!item.id || seen.has(item.id)) return false;
+      seen.add(item.id);
+      return true;
+    });
+
+    // Zero items is a problem, not a success — say so instead of staying quiet.
+    if (items.length === 0) {
+      return {
+        sourceName: source.name,
+        items: [],
+        error: `No items found in ${source.name}`,
+      };
+    }
 
     return { sourceName: source.name, items, error: null };
   } catch (err) {
