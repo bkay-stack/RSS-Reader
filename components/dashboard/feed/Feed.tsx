@@ -3,7 +3,8 @@ import FeedHeader from "./FeedHeader";
 import NewItemsBanner from "./NewItemsBanner";
 import FeedList from "./FeedList";
 import { getFeedItems } from "./getFeedItems";
-import type { ArticleItem } from "./FeedItem";
+import { getUnreadCounts } from "./getUnreadCounts";
+import { getNewItemCount } from "./getNewItemCount";
 
 export default async function Feed() {
   const supabase = await createClient();
@@ -13,12 +14,17 @@ export default async function Feed() {
 
   if (!user) return null; // or redirect, depending on your auth flow
 
-  const items = await getFeedItems(supabase, user.id);
+  // Load the list and the counts at the same time.
+  const [items, unread, newCount] = await Promise.all([
+    getFeedItems(supabase, user.id),
+    getUnreadCounts(supabase),
+    getNewItemCount(supabase),
+  ]);
 
   return (
     <section className="flex flex-1 flex-col mx-auto w-full">
-      <FeedHeader />
-      <NewItemsBanner count={0} onRefresh={() => {}} />
+      <FeedHeader unreadCount={unread.total} />
+      <NewItemsBanner count={newCount} />
       <FeedList items={items} />
     </section>
   );

@@ -1,6 +1,7 @@
 import { formatRelativeTime } from "@/lib/formatRelativeTime";
 import { getSourceColor } from "@/lib/getSourceColor";
 import { getCategoryColor } from "@/lib/getCategoryColor";
+import FeedItemRow from "./FeedItemRow";
 // import Link from "next/link";
 
 export type ArticleItem = {
@@ -24,18 +25,7 @@ export type FeedItemProps = {
 
 export default function FeedItem({ item }: FeedItemProps) {
   return (
-    <a
-      href={item.url}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="flex items-start gap-2 sm:gap-3 w-full py-3 sm:py-4 px-3 sm:px-6 border-b border-border hover:bg-surface-secondary transition-colors">
-      {/* Zone 1: unread dot */}
-      <div className="pt-2">
-        {!item.isRead && (
-          <span className="block w-2 h-2 rounded-full bg-accent" />
-        )}
-      </div>
-
+    <FeedItemRow itemId={item.id} url={item.url} isRead={item.isRead}>
       {/* Zone 2: source icon */}
       <div
         className={`w-5 h-5 sm:w-6 sm:h-6 rounded flex items-center justify-center text-xs font-semibold text-white shrink-0 ${getSourceColor(item.source.name)}`}>
@@ -66,6 +56,6 @@ export default function FeedItem({ item }: FeedItemProps) {
           {item.category}
         </span>
       </div>
-    </a>
+    </FeedItemRow>
   );
 }

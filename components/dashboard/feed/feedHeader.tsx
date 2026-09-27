@@ -5,8 +5,13 @@ import {
   ArrowDownUp,
   RefreshCcw,
 } from "lucide-react";
+import MarkAllReadButton from "./MarkAllReadButton";
 
-export default function FeedHeader() {
+type FeedHeaderProps = {
+  unreadCount: number;
+};
+
+export default function FeedHeader({ unreadCount }: FeedHeaderProps) {
   return (
     <header className="flex items-center justify-between w-full border-b border-border px-3 sm:px-6 py-3 sm:py-4">
       {/* Title */}
@@ -15,7 +20,7 @@ export default function FeedHeader() {
           All Items
         </h1>
         <span className="text-xs sm:text-sm text-text-secondary shrink-0">
-          47 unread
+          {unreadCount > 0 ? `${unreadCount} unread` : "All caught up"}
         </span>
       </div>
 
@@ -47,9 +52,7 @@ export default function FeedHeader() {
         </button>
 
         {/* Mark all — kept, tighter padding on mobile */}
-        <button className="rounded-md border border-border px-2 py-1 text-xs sm:text-sm cursor-pointer whitespace-nowrap">
-          Mark all read
-        </button>
+        <MarkAllReadButton unreadCount={unreadCount} />
       </div>
     </header>
   );
