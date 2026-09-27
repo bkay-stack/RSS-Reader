@@ -125,3 +125,45 @@ export const signOut = async (): Promise<AuthResult<null>> => {
     return { data: null, error: "Something went wrong. Please try again." };
   }
 };
+
+//  Password Reset (emails a link to /auth/update-password)
+export const requestPasswordReset = async (
+  email: string,
+): Promise<AuthResult<{ message: string }>> => {
+  try {
+    const supabase = createClient();
+    const next = encodeURIComponent("/auth/update-password");
+
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/auth/confirm?next=${next}`,
+    });
+
+    if (error) return { data: null, error: error.message };
+
+    // Same message either way, so no one can check which emails have accounts.
+    return {
+      data: {
+        message: "If that email has an account, a reset link is on its way.",
+      },
+      error: null,
+    };
+  } catch {
+    return { data: null, error: "Something went wrong. Please try again." };
+  }
+};
+
+//  Update Password (needs the session from the reset link)
+export const updatePassword = async (
+  password: string,
+): Promise<AuthResult<null>> => {
+  try {
+    const supabase = createClient();
+    const { error } = await supabase.auth.updateUser({ password });
+
+    if (error) return { data: null, error: error.message };
+
+    return { data: null, error: null };
+  } catch {
+    return { data: null, error: "Something went wrong. Please try again." };
+  }
+};
