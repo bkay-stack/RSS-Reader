@@ -16,4 +16,5 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run lint # code style and common mistakes
+      - run: npm test # run the tests
       - run: npm run build # also checks TypeScript types
