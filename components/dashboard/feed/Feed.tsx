@@ -14,6 +14,9 @@ export default async function Feed() {
 
   if (!user) return null; // or redirect, depending on your auth flow
 
+  // When this list was built; the pill counts articles that arrive after it.
+  const loadedAt = new Date().toISOString();
+
   // Load the list and the counts at the same time.
   const [items, unread, newCount] = await Promise.all([
     getFeedItems(supabase, user.id),
@@ -24,7 +27,7 @@ export default async function Feed() {
   return (
     <section className="flex flex-1 flex-col mx-auto w-full">
       <FeedHeader unreadCount={unread.total} />
-      <NewItemsBanner count={newCount} />
+      <NewItemsBanner count={newCount} loadedAt={loadedAt} />
       <FeedList items={items} />
     </section>
   );

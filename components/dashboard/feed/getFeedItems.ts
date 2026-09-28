@@ -2,6 +2,9 @@ import { createClient } from "@/lib/supabase/server";
 import { sanitizeUrl } from "@/lib/sanitizeUrl";
 import type { ArticleItem } from "./FeedItem";
 
+// How many posts the dashboard shows (newest first). Nothing else is hidden or deleted.
+const FEED_LIMIT = 10;
+
 function unwrap<T>(value: T | T[] | null | undefined): T | undefined {
   return Array.isArray(value) ? value[0] : (value ?? undefined);
 }
@@ -36,7 +39,7 @@ export async function getFeedItems(
     )
     .eq("feeds.user_feeds.user_id", userId)
     .order("published_at", { ascending: false })
-    .limit(50);
+    .limit(FEED_LIMIT);
 
   if (error) {
     console.error("feed items fetch failed:", error);
