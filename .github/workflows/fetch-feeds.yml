@@ -2,15 +2,15 @@ name: Fetch feeds
 
 on:
   schedule:
-    - cron: "0 * * * *" # every hour, on the hour
+    - cron: "17 * * * *" # every hour at :17 (:00 is GitHub's busiest minute)
   workflow_dispatch: # adds a "Run workflow" button for testing
 
 jobs:
   fetch:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
           node-version: 22
           cache: npm
