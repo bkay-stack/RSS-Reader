@@ -5,11 +5,14 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { FileText, CheckCircle2 } from "lucide-react";
 import { getCategoryDot } from "@/lib/getCategoryColor";
+import { getSourceColor } from "@/lib/getSourceColor";
+import { formatCount } from "@/lib/formatCount";
 import type { SidebarData } from "./getSidebarData";
 
 const linkClass =
-  "flex items-center justify-between px-3 py-2 rounded text-xs lg:text-sm text-text-secondary hover:text-text-primary hover:bg-accent-subtle transition-colors";
-const activeClass = "bg-accent-subtle text-text-primary";
+  "flex items-center justify-between px-3 py-2 rounded text-xs lg:text-sm transition-colors";
+const idleClass = "text-text-secondary hover:text-text-primary hover:bg-accent-subtle";
+const activeClass = "bg-accent-subtle text-accent";
 
 export default function DashboardSidebar({ data }: { data: SidebarData }) {
   // All Items is highlighted on the main feed page.
@@ -40,13 +43,14 @@ export default function DashboardSidebar({ data }: { data: SidebarData }) {
               href="/dashboard"
               aria-current={isAllItems ? "page" : undefined}
               aria-label={`All Items, ${data.totalUnread} unread`}
-              className={`${linkClass} ${isAllItems ? activeClass : ""}`}>
+              className={`${linkClass} ${isAllItems ? activeClass : idleClass}`}>
               <span className="flex items-center gap-2 font-medium">
                 <FileText size={16} />
                 <span className="hidden lg:inline">All Items</span>
               </span>
-              <span className="hidden lg:inline text-xs text-text-tertiary">
-                {data.totalUnread}
+              <span
+                className={`hidden lg:inline text-xs ${isAllItems ? "text-accent" : "text-text-tertiary"}`}>
+                {formatCount(data.totalUnread)}
               </span>
             </Link>
           </li>
@@ -70,7 +74,7 @@ export default function DashboardSidebar({ data }: { data: SidebarData }) {
                   onClick={() => toggleCategory(category.id)}
                   aria-expanded={isOpen}
                   aria-label={`${category.name}, ${category.unread} unread`}
-                  className={`w-full ${linkClass}`}>
+                  className={`w-full ${linkClass} ${idleClass}`}>
                   <span className="flex items-center gap-2">
                     <span
                       className={`w-2 h-2 rounded-full shrink-0 ${getCategoryDot(category.name)}`}
@@ -79,21 +83,29 @@ export default function DashboardSidebar({ data }: { data: SidebarData }) {
                     <span className="hidden lg:inline">{category.name}</span>
                   </span>
                   <span className="hidden lg:inline text-xs text-text-tertiary">
-                    {category.unread}
+                    {formatCount(category.unread)}
                   </span>
                 </button>
 
                 {/* Feeds in this category */}
 
                 {isOpen && (
-                  <ul className="hidden lg:flex flex-col gap-0.5 mt-1 ml-6">
+                  <ul className="hidden lg:flex flex-col gap-0.5 mt-1 ml-3">
                     {category.feeds.map((feed) => (
                       <li
                         key={feed.id}
-                        className="flex items-center justify-between px-3 py-1.5 rounded text-xs text-text-secondary">
-                        <span className="truncate">{feed.name}</span>
-                        <span className="text-text-tertiary shrink-0 ml-2">
-                          {feed.unread}
+                        className="flex items-center justify-between gap-2 px-3 py-1.5 text-xs text-text-secondary">
+                        <span className="flex items-center gap-2 min-w-0">
+                          {/* Letter icon, same colors as the article list */}
+                          <span
+                            aria-hidden="true"
+                            className={`w-4 h-4 rounded-sm flex items-center justify-center text-[10px] font-semibold text-white shrink-0 ${getSourceColor(feed.name)}`}>
+                            {feed.name.charAt(0)}
+                          </span>
+                          <span className="truncate">{feed.name}</span>
+                        </span>
+                        <span className="text-text-tertiary shrink-0">
+                          {formatCount(feed.unread)}
                         </span>
                       </li>
                     ))}

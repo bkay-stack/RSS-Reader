@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Menu, X, FileText, CheckCircle2 } from "lucide-react";
 import Logo from "@/components/branding/logo";
 import { getCategoryDot } from "@/lib/getCategoryColor";
+import { formatCount } from "@/lib/formatCount";
 import type { SidebarData } from "./getSidebarData";
 
 export default function MobileSidebarDrawer({ data }: { data: SidebarData }) {
@@ -52,7 +53,7 @@ export default function MobileSidebarDrawer({ data }: { data: SidebarData }) {
                   All Items
                 </span>
                 <span className="text-xs text-text-tertiary">
-                  {data.totalUnread}
+                  {formatCount(data.totalUnread)}
                 </span>
               </Link>
             </li>
@@ -74,7 +75,7 @@ export default function MobileSidebarDrawer({ data }: { data: SidebarData }) {
                     />
                     {name}
                   </span>
-                  <span className="text-xs text-text-tertiary">{unread}</span>
+                  <span className="text-xs text-text-tertiary">{formatCount(unread)}</span>
                 </Link>
               </li>
             ))}
