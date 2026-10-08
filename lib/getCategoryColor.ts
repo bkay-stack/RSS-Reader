@@ -13,3 +13,16 @@ export function getCategoryColor(category: string): string {
 }
 
 export default getCategoryColor;
+
+// Dot colors for categories in the sidebar.
+const CATEGORY_DOTS: Record<string, string> = {
+  Frontend: "bg-accent",
+  Design: "bg-unread",
+  "Backend & DevOps": "bg-warning",
+  "General Tech": "bg-success",
+  "AI & ML": "bg-error",
+};
+
+export function getCategoryDot(category: string): string {
+  return CATEGORY_DOTS[category] ?? "bg-text-tertiary";
+}

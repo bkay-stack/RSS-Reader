@@ -2,107 +2,62 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { FileText, Bookmark, CheckCircle2 } from "lucide-react";
+import { useSearchParams } from "next/navigation";
+import { FileText, CheckCircle2 } from "lucide-react";
+import { getCategoryDot } from "@/lib/getCategoryColor";
+import type { SidebarData } from "./getSidebarData";
 
-const topNav = [
-  { href: "/dashboard", label: "All Items", icon: FileText, count: 47 },
-  { href: "/dashboard/saved", label: "Saved", icon: Bookmark, count: 12 },
-];
+const linkClass =
+  "flex items-center justify-between px-3 py-2 rounded text-xs lg:text-sm text-text-secondary hover:text-text-primary hover:bg-accent-subtle transition-colors";
+const activeClass = "bg-accent-subtle text-text-primary";
 
-// Stub — will come from Supabase `categories` + `feeds` tables (feeds join on category_id)
-const categories = [
-  {
-    id: "frontend",
-    name: "Frontend",
-    color: "bg-accent",
-    count: 14,
-    feeds: [
-      { id: "css-tricks", name: "CSS-Tricks", count: 3 },
-      { id: "smashing-mag", name: "Smashing Magazine", count: 4 },
-      { id: "josh-comeau", name: "Josh W. Comeau", count: 2 },
-      { id: "kent-c-dodds", name: "Kent C. Dodds", count: 2 },
-      { id: "web-dev", name: "web.dev", count: 3 },
-    ],
-  },
-  {
-    id: "design",
-    name: "Design",
-    color: "bg-unread",
-    count: 11,
-    feeds: [
-      { id: "sidebar-io", name: "Sidebar.io", count: 5 },
-      { id: "nn-group", name: "Nielsen Norman Group", count: 2 },
-      { id: "figma-blog", name: "Figma Blog", count: 2 },
-      { id: "ux-collective", name: "UX Collective", count: 2 },
-    ],
-  },
-  {
-    id: "backend-devops",
-    name: "Backend & DevOps",
-    color: "bg-warning",
-    count: 9,
-    feeds: [
-      { id: "cloudflare", name: "Cloudflare Blog", count: 4 },
-      { id: "vercel", name: "Vercel Blog", count: 2 },
-      { id: "github-blog", name: "The GitHub Blog", count: 3 },
-    ],
-  },
-  {
-    id: "general-tech",
-    name: "General Tech",
-    color: "bg-success",
-    count: 6,
-    feeds: [
-      { id: "pragmatic-engineer", name: "The Pragmatic Engineer", count: 2 },
-      { id: "hn-best", name: "Hacker News Best", count: 4 },
-    ],
-  },
-  {
-    id: "ai-ml",
-    name: "AI & ML",
-    color: "bg-error",
-    count: 8,
-    feeds: [
-      { id: "simon-willison", name: "Simon Willison's Weblog", count: 5 },
-      { id: "hugging-face", name: "Hugging Face Blog", count: 3 },
-    ],
-  },
-];
+export default function DashboardSidebar({ data }: { data: SidebarData }) {
+  // The filter in the URL: ?category=… or ?feed=… (neither = All Items).
+  const searchParams = useSearchParams();
+  const categoryId = searchParams.get("category");
+  const feedId = searchParams.get("feed");
+  const isAllItems = !categoryId && !feedId;
 
-export default function DashboardSidebar() {
-  const [openCategories, setOpenCategories] = useState<Set<string>>(new Set());
+  // Categories showing their feeds. Starts with the one in the URL.
+  const [openIds, setOpenIds] = useState<Set<string>>(() => {
+    const picked = data.categories.find(
+      (c) => c.id === categoryId || c.feeds.some((f) => f.id === feedId),
+    );
+    return new Set(picked ? [picked.id] : []);
+  });
 
-  const toggleCategory = (id: string) => {
-    setOpenCategories((prev) => {
+  // Picking a category opens it; clicking it again closes it.
+  function toggleCategory(id: string) {
+    setOpenIds((prev) => {
       const next = new Set(prev);
-      if (next.has(id)) {
+      if (id === categoryId && next.has(id)) {
         next.delete(id);
       } else {
         next.add(id);
       }
       return next;
     });
-  };
+  }
 
   return (
     <aside className="hidden md:flex flex-col h-full w-16 lg:w-sidebar border-r border-border bg-bg-secondary transition-all">
       <nav className="flex-1 min-h-0 overflow-y-auto p-2 lg:p-4">
         <ul className="flex flex-col gap-1">
-          {topNav.map(({ href, label, icon: Icon, count }) => (
-            <li key={href}>
-              <Link
-                href={href}
-                className="flex items-center justify-between px-3 py-2 rounded text-xs lg:text-sm text-text-secondary hover:text-text-primary hover:bg-accent-subtle transition-colors">
-                <span className="flex items-center gap-2 font-medium text-text-secondary">
-                  <Icon size={16} />
-                  <span className="hidden lg:inline">{label}</span>
-                </span>
-                <span className="hidden lg:inline text-xs text-text-tertiary">
-                  {count}
-                </span>
-              </Link>
-            </li>
-          ))}
+          <li>
+            <Link
+              href="/dashboard"
+              aria-current={isAllItems ? "page" : undefined}
+              aria-label={`All Items, ${data.totalUnread} unread`}
+              className={`${linkClass} ${isAllItems ? activeClass : ""}`}>
+              <span className="flex items-center gap-2 font-medium">
+                <FileText size={16} />
+                <span className="hidden lg:inline">All Items</span>
+              </span>
+              <span className="hidden lg:inline text-xs text-text-tertiary">
+                {data.totalUnread}
+              </span>
+            </Link>
+          </li>
 
           <div className="border-t border-border w-7/8 mt-(--space-4) mx-auto"></div>
         </ul>
@@ -113,39 +68,44 @@ export default function DashboardSidebar() {
           Categories
         </p>
         <ul className="flex flex-col gap-1 mt-6 lg:mt-0">
-          {categories.map(({ id, name, color, count, feeds }) => {
-            const isOpen = openCategories.has(id);
+          {data.categories.map((category) => {
+            const isActive = category.id === categoryId;
+            const isOpen = openIds.has(category.id);
 
             return (
-              <li key={id}>
-                <button
-                  onClick={() => toggleCategory(id)}
+              <li key={category.id}>
+                <Link
+                  href={`/dashboard?category=${category.id}`}
+                  onClick={() => toggleCategory(category.id)}
                   aria-expanded={isOpen}
-                  className="w-full flex items-center justify-between px-3 py-2 rounded text-xs lg:text-sm text-text-secondary hover:text-text-primary hover:bg-accent-subtle transition-colors">
+                  aria-current={isActive ? "page" : undefined}
+                  aria-label={`${category.name}, ${category.unread} unread`}
+                  className={`${linkClass} ${isActive ? activeClass : ""}`}>
                   <span className="flex items-center gap-2">
                     <span
-                      className={`w-2 h-2 rounded-full shrink-0 ${color}`}
+                      className={`w-2 h-2 rounded-full shrink-0 ${getCategoryDot(category.name)}`}
                       aria-hidden="true"
                     />
-                    <span className="hidden lg:inline">{name}</span>
+                    <span className="hidden lg:inline">{category.name}</span>
                   </span>
                   <span className="hidden lg:inline text-xs text-text-tertiary">
-                    {count}
+                    {category.unread}
                   </span>
-                </button>
+                </Link>
 
-                {/* Subcategories */}
+                {/* Feeds in this category */}
 
                 {isOpen && (
                   <ul className="hidden lg:flex flex-col gap-0.5 mt-1 ml-6">
-                    {feeds.map((feed) => (
+                    {category.feeds.map((feed) => (
                       <li key={feed.id}>
                         <Link
-                          href={`/dashboard/feed/${feed.id}`}
-                          className="flex items-center justify-between px-3 py-1.5 rounded text-xs text-text-secondary hover:text-text-primary hover:bg-accent-subtle transition-colors">
+                          href={`/dashboard?feed=${feed.id}`}
+                          aria-current={feed.id === feedId ? "page" : undefined}
+                          className={`flex items-center justify-between px-3 py-1.5 rounded text-xs text-text-secondary hover:text-text-primary hover:bg-accent-subtle transition-colors ${feed.id === feedId ? activeClass : ""}`}>
                           <span className="truncate">{feed.name}</span>
                           <span className="text-text-tertiary shrink-0 ml-2">
-                            {feed.count}
+                            {feed.unread}
                           </span>
                         </Link>
                       </li>
