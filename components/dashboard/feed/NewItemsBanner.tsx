@@ -54,6 +54,7 @@ export default function NewItemsBanner({
     startTransition(async () => {
       await Promise.all([
         loadNewItems(),
+        recordVisit(),
         new Promise((resolve) => setTimeout(resolve, MIN_LOADING_MS)),
       ]);
 

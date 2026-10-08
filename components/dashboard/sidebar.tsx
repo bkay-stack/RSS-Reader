@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { FileText, CheckCircle2 } from "lucide-react";
 import { getCategoryDot } from "@/lib/getCategoryColor";
 import type { SidebarData } from "./getSidebarData";
@@ -12,25 +12,17 @@ const linkClass =
 const activeClass = "bg-accent-subtle text-text-primary";
 
 export default function DashboardSidebar({ data }: { data: SidebarData }) {
-  // The filter in the URL: ?category=… or ?feed=… (neither = All Items).
-  const searchParams = useSearchParams();
-  const categoryId = searchParams.get("category");
-  const feedId = searchParams.get("feed");
-  const isAllItems = !categoryId && !feedId;
+  // All Items is highlighted on the main feed page.
+  const isAllItems = usePathname() === "/dashboard";
 
-  // Categories showing their feeds. Starts with the one in the URL.
-  const [openIds, setOpenIds] = useState<Set<string>>(() => {
-    const picked = data.categories.find(
-      (c) => c.id === categoryId || c.feeds.some((f) => f.id === feedId),
-    );
-    return new Set(picked ? [picked.id] : []);
-  });
+  // Categories showing their feeds.
+  const [openIds, setOpenIds] = useState<Set<string>>(new Set());
 
-  // Picking a category opens it; clicking it again closes it.
+  // Click a category to show or hide its feeds.
   function toggleCategory(id: string) {
     setOpenIds((prev) => {
       const next = new Set(prev);
-      if (id === categoryId && next.has(id)) {
+      if (next.has(id)) {
         next.delete(id);
       } else {
         next.add(id);
@@ -69,18 +61,16 @@ export default function DashboardSidebar({ data }: { data: SidebarData }) {
         </p>
         <ul className="flex flex-col gap-1 mt-6 lg:mt-0">
           {data.categories.map((category) => {
-            const isActive = category.id === categoryId;
             const isOpen = openIds.has(category.id);
 
             return (
               <li key={category.id}>
-                <Link
-                  href={`/dashboard?category=${category.id}`}
+                <button
+                  type="button"
                   onClick={() => toggleCategory(category.id)}
                   aria-expanded={isOpen}
-                  aria-current={isActive ? "page" : undefined}
                   aria-label={`${category.name}, ${category.unread} unread`}
-                  className={`${linkClass} ${isActive ? activeClass : ""}`}>
+                  className={`w-full ${linkClass}`}>
                   <span className="flex items-center gap-2">
                     <span
                       className={`w-2 h-2 rounded-full shrink-0 ${getCategoryDot(category.name)}`}
@@ -91,23 +81,20 @@ export default function DashboardSidebar({ data }: { data: SidebarData }) {
                   <span className="hidden lg:inline text-xs text-text-tertiary">
                     {category.unread}
                   </span>
-                </Link>
+                </button>
 
                 {/* Feeds in this category */}
 
                 {isOpen && (
                   <ul className="hidden lg:flex flex-col gap-0.5 mt-1 ml-6">
                     {category.feeds.map((feed) => (
-                      <li key={feed.id}>
-                        <Link
-                          href={`/dashboard?feed=${feed.id}`}
-                          aria-current={feed.id === feedId ? "page" : undefined}
-                          className={`flex items-center justify-between px-3 py-1.5 rounded text-xs text-text-secondary hover:text-text-primary hover:bg-accent-subtle transition-colors ${feed.id === feedId ? activeClass : ""}`}>
-                          <span className="truncate">{feed.name}</span>
-                          <span className="text-text-tertiary shrink-0 ml-2">
-                            {feed.unread}
-                          </span>
-                        </Link>
+                      <li
+                        key={feed.id}
+                        className="flex items-center justify-between px-3 py-1.5 rounded text-xs text-text-secondary">
+                        <span className="truncate">{feed.name}</span>
+                        <span className="text-text-tertiary shrink-0 ml-2">
+                          {feed.unread}
+                        </span>
                       </li>
                     ))}
                   </ul>
