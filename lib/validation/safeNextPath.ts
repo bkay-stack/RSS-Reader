@@ -1,18 +1,5 @@
-/**
- * safeNextPath — validates the `?next=` value used after sign-in/confirm.
- *
- * WHY
- *   The auth routes redirect to `${origin}${next}`. If `next` is not a plain
- *   path, an attacker can send users to their own site (an "open redirect"):
- *     "@evil.com"  → "https://myapp.com@evil.com"  → opens evil.com
- *     ".evil.com"  → "https://myapp.com.evil.com"  → a domain they own
- *
- * WHAT IT DOES
- *   Keeps `next` only if it is a path on this site:
- *     - starts with a single "/"
- *     - is not "//…" or "/\…" (browsers treat both as another host)
- *   Otherwise returns `fallback`.
- */
+// Keeps ?next= only if it's a path on this site, so sign-in can't redirect elsewhere.
+// "/dashboard" → kept; "//evil.com", "/\evil.com", "@evil.com" → fallback.
 
 export function safeNextPath(next: string | null, fallback: string): string {
   if (!next) return fallback;

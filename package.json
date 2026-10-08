@@ -7,17 +7,19 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "vitest run"
+    "test": "vitest run",
+    "fetch-feeds": "tsx scripts/fetch-feeds.ts",
+    "seed-feeds": "tsx scripts/seed-feeds.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.4.0",
     "@supabase/ssr": "^0.10.3",
     "@supabase/supabase-js": "^2.108.2",
-    "dompurify": "^3.4.15",
+    "dompurify": "^3.4.16",
     "fast-xml-parser": "^5.10.1",
     "isomorphic-dompurify": "^3.19.0",
     "lucide-react": "^1.18.0",
-    "next": "^16.3.0-preview.3",
+    "next": "^16.4.0",
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "react-hook-form": "^7.80.0",
@@ -30,8 +32,9 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
-    "eslint-config-next": "^16.3.0-preview.3",
+    "eslint-config-next": "^16.4.0",
     "tailwindcss": "^4",
+    "tsx": "^4.23.15",
     "typescript": "^5",
     "vitest": "^5.0.2"
   }
