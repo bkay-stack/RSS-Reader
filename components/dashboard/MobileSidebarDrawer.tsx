@@ -2,28 +2,13 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Menu, X, FileText, Bookmark, CheckCircle2 } from "lucide-react";
+import { Menu, X, FileText, CheckCircle2 } from "lucide-react";
 import Logo from "@/components/branding/logo";
+import { getCategoryDot } from "@/lib/getCategoryColor";
+import { formatCount } from "@/lib/formatCount";
+import type { SidebarData } from "./getSidebarData";
 
-const topNav = [
-  { href: "/dashboard", label: "All Items", icon: FileText, count: 47 },
-  { href: "/dashboard/saved", label: "Saved", icon: Bookmark, count: 12 },
-];
-
-const categories = [
-  { id: "frontend", name: "Frontend", color: "bg-accent", count: 14 },
-  { id: "design", name: "Design", color: "bg-unread", count: 11 },
-  {
-    id: "backend-devops",
-    name: "Backend & DevOps",
-    color: "bg-warning",
-    count: 9,
-  },
-  { id: "general-tech", name: "General Tech", color: "bg-success", count: 6 },
-  { id: "ai-ml", name: "AI & ML", color: "bg-error", count: 8 },
-];
-
-export default function MobileSidebarDrawer() {
+export default function MobileSidebarDrawer({ data }: { data: SidebarData }) {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -58,37 +43,39 @@ export default function MobileSidebarDrawer() {
 
         <nav className="flex-1 overflow-y-auto p-4">
           <ul className="flex flex-col gap-1">
-            {topNav.map(({ href, label, icon: Icon, count }) => (
-              <li key={href}>
-                <Link
-                  href={href}
-                  onClick={() => setIsOpen(false)}
-                  className="flex items-center justify-between px-3 py-2 rounded text-sm text-text-secondary hover:bg-accent-subtle">
-                  <span className="flex items-center gap-2">
-                    <Icon size={16} />
-                    {label}
-                  </span>
-                  <span className="text-xs text-text-tertiary">{count}</span>
-                </Link>
-              </li>
-            ))}
+            <li>
+              <Link
+                href="/dashboard"
+                onClick={() => setIsOpen(false)}
+                className="flex items-center justify-between px-3 py-2 rounded text-sm text-text-secondary hover:bg-accent-subtle">
+                <span className="flex items-center gap-2">
+                  <FileText size={16} />
+                  All Items
+                </span>
+                <span className="text-xs text-text-tertiary">
+                  {formatCount(data.totalUnread)}
+                </span>
+              </Link>
+            </li>
           </ul>
 
           <p className="px-3 mt-6 mb-2 text-xs font-medium uppercase tracking-wide text-text-tertiary">
             Categories
           </p>
           <ul className="flex flex-col gap-1">
-            {categories.map(({ id, name, color, count }) => (
+            {data.categories.map(({ id, name, unread }) => (
               <li key={id}>
                 <Link
-                  href={`/dashboard/category/${id}`}
+                  href={`/dashboard?category=${id}`}
                   onClick={() => setIsOpen(false)}
                   className="flex items-center justify-between px-3 py-2 rounded text-sm text-text-secondary hover:bg-accent-subtle">
                   <span className="flex items-center gap-2">
-                    <span className={`w-2 h-2 rounded-full ${color}`} />
+                    <span
+                      className={`w-2 h-2 rounded-full ${getCategoryDot(name)}`}
+                    />
                     {name}
                   </span>
-                  <span className="text-xs text-text-tertiary">{count}</span>
+                  <span className="text-xs text-text-tertiary">{formatCount(unread)}</span>
                 </Link>
               </li>
             ))}

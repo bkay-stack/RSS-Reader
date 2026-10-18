@@ -21,4 +21,12 @@ describe("sanitizeUrl", () => {
   it("returns empty text for an empty link", () => {
     expect(sanitizeUrl("")).toBe("");
   });
+
+  it("blocks javascript: links written in capital letters", () => {
+    expect(sanitizeUrl("JavaScript:alert(1)")).toBe("");
+  });
+
+  it("blocks javascript: links with a leading space", () => {
+    expect(sanitizeUrl("  javascript:alert(1)")).toBe("");
+  });
 });
