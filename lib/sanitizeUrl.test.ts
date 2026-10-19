@@ -29,4 +29,12 @@ describe("sanitizeUrl", () => {
   it("blocks javascript: links with a leading space", () => {
     expect(sanitizeUrl("  javascript:alert(1)")).toBe("");
   });
+
+  it("blocks data: links", () => {
+    expect(sanitizeUrl("data:text/html,<script>alert(1)</script>")).toBe("");
+  });
+
+  it("blocks javascript: links with a tab inside", () => {
+    expect(sanitizeUrl("java\tscript:alert(1)")).toBe("");
+  });
 });
