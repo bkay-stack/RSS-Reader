@@ -2,6 +2,7 @@ import Logo from "@/components/branding/logo";
 import Link from "next/link";
 import { FiRss } from "react-icons/fi";
 import Footer from "@/components/shared/footer/page";
+import { TryAsGuestButton } from "@/components/landing/TryAsGuestButton";
 
 export default function LandingPage() {
   return (
@@ -44,11 +45,7 @@ export default function LandingPage() {
             className="bg-accent hover:bg-accent-hover text-white text-sm font-semibold py-3 px-8 rounded-md transition-colors text-center">
             Get Started Free →
           </Link>
-          <Link
-            href="/dashboard"
-            className="bg-bg-primary hover:bg-bg-secondary text-text-primary text-sm font-medium py-3 px-8 rounded-md border border-border transition-colors text-center">
-            Try as Guest
-          </Link>
+          <TryAsGuestButton className="w-full bg-bg-primary hover:bg-bg-secondary text-text-primary text-sm font-medium py-3 px-8 rounded-md border border-border transition-colors text-center" />
         </div>
 
         {/* Social proof */}
