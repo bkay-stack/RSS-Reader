@@ -32,7 +32,7 @@ export function TryAsGuestButton({ className }: { className?: string }) {
         onClick={handleClick}
         disabled={pending}
         className={`${className ?? ""} disabled:opacity-60 disabled:cursor-not-allowed`}>
-        {pending ? "Starting…" : "Try as Guest"}
+        {pending ? "Loading..." : "Try as Guest"}
       </button>
       {error && (
         <p role="alert" className="text-sm text-error">
