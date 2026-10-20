@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/client";
+// import { signInAsGuest } from "@/lib/supabase/auth.service";
 import type {
   TSignUpSchema,
   TSignInSchema,
@@ -160,6 +161,26 @@ export const updatePassword = async (
     const supabase = createClient();
     const { error } = await supabase.auth.updateUser({ password });
 
+    if (error) return { data: null, error: error.message };
+
+    return { data: null, error: null };
+  } catch {
+    return { data: null, error: "Something went wrong. Please try again." };
+  }
+};
+
+//  Guest (anonymous user, no email or password)
+export const signInAsGuest = async (): Promise<AuthResult<null>> => {
+  try {
+    const supabase = createClient();
+
+    // Already signed in (guest or real)? Keep that session.
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+    if (session) return { data: null, error: null };
+
+    const { error } = await supabase.auth.signInAnonymously();
     if (error) return { data: null, error: error.message };
 
     return { data: null, error: null };
