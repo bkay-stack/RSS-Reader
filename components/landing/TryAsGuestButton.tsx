@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { signInAsGuest } from "@/lib/supabase/auth.service";
+import { seedGuestFeeds } from "@/lib/guest/seedGuestFeeds";
 
 export function TryAsGuestButton({ className }: { className?: string }) {
   const router = useRouter();
@@ -17,6 +18,13 @@ export function TryAsGuestButton({ className }: { className?: string }) {
 
     if (error) {
       setError(error);
+      setPending(false);
+      return;
+    }
+
+    const { failed } = await seedGuestFeeds();
+    if (failed.length) {
+      setError("Couldn't load the sample feeds. Please try again.");
       setPending(false);
       return;
     }

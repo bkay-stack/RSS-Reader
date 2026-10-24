@@ -50,7 +50,7 @@ export default function LandingPage() {
 
         {/* Social proof */}
         <p className="text-sm text-text-tertiary">
-          Trusted by 12,000+ developers and designers
+          No account needed. Try it in one click.
         </p>
       </section>
 

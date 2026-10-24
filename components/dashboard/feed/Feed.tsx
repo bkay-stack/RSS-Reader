@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { GuestBanner } from "@/components/dashboard/GuestBanner";
 import FeedHeader from "./FeedHeader";
 import NewItemsBanner from "./NewItemsBanner";
 import FeedList from "./FeedList";
@@ -27,6 +28,7 @@ export default async function Feed() {
   return (
     <section className="flex flex-1 flex-col mx-auto w-full">
       <FeedHeader unreadCount={unread.total} />
+      {user.is_anonymous && <GuestBanner pendingEmail={user.new_email} />}
       <NewItemsBanner count={newCount} loadedAt={loadedAt} />
       <FeedList items={items} />
     </section>
