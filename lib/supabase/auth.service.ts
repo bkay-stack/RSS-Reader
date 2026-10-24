@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/client";
+
 import type {
   TSignUpSchema,
   TSignInSchema,
@@ -73,16 +74,26 @@ export const signInWithGoogle = async (): Promise<AuthResult<null>> => {
   try {
     const supabase = createClient();
 
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: {
-        redirectTo: `${window.location.origin}/auth/callback`,
-        queryParams: {
-          access_type: "offline",
-          prompt: "consent",
-        },
+    // A guest must LINK Google to their existing user (same ID, data stays).
+    // Normal sign-in would create a different user and orphan their feeds.
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    const isGuest = user?.is_anonymous === true;
+
+    const options = {
+      redirectTo: isGuest
+        ? `${window.location.origin}/auth/callback?next=${encodeURIComponent("/dashboard")}`
+        : `${window.location.origin}/auth/callback`,
+      queryParams: {
+        access_type: "offline",
+        prompt: "consent",
       },
-    });
+    };
+
+    const { error } = isGuest
+      ? await supabase.auth.linkIdentity({ provider: "google", options })
+      : await supabase.auth.signInWithOAuth({ provider: "google", options });
 
     if (error) return { data: null, error: error.message };
 
@@ -91,7 +102,6 @@ export const signInWithGoogle = async (): Promise<AuthResult<null>> => {
     return { data: null, error: "Something went wrong. Please try again." };
   }
 };
-
 //  GitHub OAuth
 export const signInWithGithub = async (): Promise<AuthResult<null>> => {
   try {
@@ -166,4 +176,66 @@ export const updatePassword = async (
   } catch {
     return { data: null, error: "Something went wrong. Please try again." };
   }
+};
+
+//  Guest (anonymous user, no email or password)
+export const signInAsGuest = async (): Promise<AuthResult<null>> => {
+  try {
+    const supabase = createClient();
+
+    // Already signed in (guest or real)? Keep that session.
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (user) return { data: null, error: null };
+
+    const { error } = await supabase.auth.signInAnonymously();
+    if (error) return { data: null, error: error.message };
+
+    return { data: null, error: null };
+  } catch {
+    return { data: null, error: "Something went wrong. Please try again." };
+  }
+};
+
+//  Guest → real account from the sign-up form. Same user, so data stays.
+export const upgradeGuestToAccount = async (
+  input: TSignUpSchema,
+): Promise<AuthResult<{ message: string }>> => {
+  try {
+    const supabase = createClient();
+
+    const { error } = await supabase.auth.updateUser(
+      {
+        email: input.email,
+        password: input.password,
+        data: { full_name: input.name },
+      },
+      {
+        emailRedirectTo: `${window.location.origin}/auth/confirm?next=${encodeURIComponent("/onboarding")}`,
+      },
+    );
+    if (error) return { data: null, error: error.message };
+
+    return {
+      data: { message: "Check your email to confirm your account." },
+      error: null,
+    };
+  } catch {
+    return { data: null, error: "Something went wrong. Please try again." };
+  }
+};
+
+//  Sign-up form entry point: guests upgrade, everyone else signs up.
+export const registerAccount = async (
+  input: TSignUpSchema,
+): Promise<AuthResult<{ message: string }>> => {
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  return user?.is_anonymous
+    ? upgradeGuestToAccount(input)
+    : signUpWithEmail(input);
 };

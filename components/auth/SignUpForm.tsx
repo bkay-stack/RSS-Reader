@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { FiMail, FiLock, FiEye, FiUser, FiEyeOff } from "react-icons/fi";
+
 import { FcGoogle } from "react-icons/fc";
 import { FiGithub } from "react-icons/fi";
 import { useState } from "react";
@@ -9,7 +10,7 @@ import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { TSignUpSchema, signupSchema } from "@/lib/validation/auth.schema";
 import {
-  signUpWithEmail,
+  registerAccount,
   signInWithGoogle,
   signInWithGithub,
 } from "@/lib/supabase/auth.service";
@@ -76,7 +77,7 @@ export default function SignUpForm() {
     setAuthError(null);
     setSuccessMessage(null);
 
-    const { data: result, error } = await signUpWithEmail(data);
+    const { data: result, error } = await registerAccount(data);
 
     if (error) {
       setAuthError(error);
@@ -195,9 +196,7 @@ export default function SignUpForm() {
             </button>
           </div>
           {errors.password && (
-            <p className="text-xs text-error mt-1">
-              {errors.password.message}
-            </p>
+            <p className="text-xs text-error mt-1">{errors.password.message}</p>
           )}
           {passwordValue && (
             <>
