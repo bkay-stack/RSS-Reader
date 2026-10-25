@@ -22,7 +22,7 @@ export default function MarkAllReadButton({
 
     setStatus("");
     startTransition(async () => {
-      const result = await markAllRead(scope);
+      const result = await markAllRead(true, scope);
       setError(result.error);
       // Screen readers hear that it worked.
       if (!result.error) setStatus("All items marked as read.");
