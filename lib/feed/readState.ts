@@ -39,18 +39,19 @@ export async function setItemRead(itemId: string, isRead: boolean) {
   return { error: null };
 }
 
-// Which items "mark all read" covers. Leave empty for everything.
+// Which items "mark all" covers. Leave empty for everything.
 export type ReadScope = { feedId?: string; categoryId?: string };
 
-const scopeSchema = z.object({
+const markAllSchema = z.object({
+  isRead: z.boolean(),
   feedId: z.uuid().optional(),
   categoryId: z.uuid().optional(),
 });
 
-// Mark many items read in one go (runs the mark_all_read SQL function).
-export async function markAllRead(scope: ReadScope = {}) {
-  const input = scopeSchema.safeParse(scope);
-  if (!input.success) return { error: "Invalid scope." };
+// Mark many items read (true) or unread (false) in one go.
+export async function markAllRead(isRead: boolean, scope: ReadScope = {}) {
+  const input = markAllSchema.safeParse({ isRead, ...scope });
+  if (!input.success) return { error: "Invalid request." };
 
   const supabase = await createClient();
   const {
@@ -59,13 +60,14 @@ export async function markAllRead(scope: ReadScope = {}) {
   if (!user) return { error: "You're signed out." };
 
   const { error } = await supabase.rpc("mark_all_read", {
+    p_is_read: input.data.isRead,
     p_feed_id: input.data.feedId ?? null,
     p_category_id: input.data.categoryId ?? null,
   });
 
   if (error) {
     console.error("markAllRead failed:", error);
-    return { error: "Couldn't mark all as read. Try again." };
+    return { error: "Couldn't update. Try again." };
   }
 
   refresh();
