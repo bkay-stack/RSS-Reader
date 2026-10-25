@@ -43,7 +43,7 @@ export default function MarkAllReadButton({
         type="button"
         onClick={handleClick}
         disabled={isPending || unreadCount === 0}
-        className="rounded-md border border-border px-2 py-1 text-xs sm:text-sm whitespace-nowrap disabled:opacity-50">
+        className="rounded-md border border-border bg-surface px-3 py-2 text-xs sm:text-sm font-medium whitespace-nowrap disabled:cursor-not-allowed">
         {isPending ? "Marking…" : "Mark all read"}
       </button>
     </>
