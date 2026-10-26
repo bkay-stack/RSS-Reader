@@ -1,11 +1,12 @@
 import { createClient } from "@/lib/supabase/server";
 import { GuestBanner } from "@/components/dashboard/GuestBanner";
-import FeedHeader from "./FeedHeader";
+// import FeedHeader from "./FeedHeader";
 import NewItemsBanner from "./NewItemsBanner";
-import FeedList from "./FeedList";
+// import FeedList from "./FeedList";
 import { getFeedItems } from "./getFeedItems";
 import { getUnreadCounts } from "./getUnreadCounts";
 import { getNewItemCount } from "./getNewItemCount";
+import FeedClient from "./FeedClient";
 
 export default async function Feed() {
   const supabase = await createClient();
@@ -24,13 +25,14 @@ export default async function Feed() {
     getUnreadCounts(supabase),
     getNewItemCount(supabase),
   ]);
-
   return (
-    <section className="flex flex-1 flex-col mx-auto w-full">
-      <FeedHeader unreadCount={unread.total} />
+    <FeedClient
+      userId={user.id}
+      initialItems={items}
+      unreadCount={unread.total}>
       {user.is_anonymous && <GuestBanner pendingEmail={user.new_email} />}
+
       <NewItemsBanner count={newCount} loadedAt={loadedAt} />
-      <FeedList items={items} />
-    </section>
+    </FeedClient>
   );
 }
