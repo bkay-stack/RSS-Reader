@@ -3,10 +3,15 @@ import { fetchAndParseFeed, type FeedFetchResult } from "./fetchAndParseFeed";
 
 export async function fetchAllFeeds(
   supabase: SupabaseClient,
+  feedIds?: string[],
 ): Promise<(FeedFetchResult & { feedId: string })[]> {
-  const { data: feeds, error } = await supabase
-    .from("feeds")
-    .select("id, title, feed_url, site_url");
+  let query = supabase.from("feeds").select("id, title, feed_url, site_url");
+
+  if (feedIds) {
+    query = query.in("id", feedIds);
+  }
+
+  const { data: feeds, error } = await query;
 
   if (error || !feeds) {
     console.error("could not load feeds for fetching:", error);

@@ -1,11 +1,6 @@
-import {
-  List,
-  LayoutGrid,
-  AlignJustify,
-  ArrowDownUp,
-  RefreshCcw,
-} from "lucide-react";
+import { List, LayoutGrid, AlignJustify, ArrowDownUp } from "lucide-react";
 import MarkAllReadButton from "./MarkAllReadButton";
+import RefreshButton from "./RefreshButton";
 
 type FeedHeaderProps = {
   unreadCount: number;
@@ -46,10 +41,7 @@ export default function FeedHeader({ unreadCount }: FeedHeaderProps) {
         </button>
 
         {/* Refresh — icon only on mobile */}
-        <button className="flex items-center gap-2 rounded-md border border-border px-2 py-1 text-sm cursor-pointer">
-          <RefreshCcw className="h-4 w-4" />
-          <span className="hidden sm:inline">Refresh</span>
-        </button>
+        <RefreshButton />
 
         {/* Mark all — kept, tighter padding on mobile */}
         <MarkAllReadButton unreadCount={unreadCount} />
