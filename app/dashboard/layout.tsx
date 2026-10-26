@@ -2,6 +2,7 @@ import DashboardNavbar from "@/components/dashboard/navbar";
 import { getSidebarData } from "@/components/dashboard/getSidebarData";
 import Sidebar from "@/components/dashboard/sidebar";
 import { requireUser } from "@/lib/supabase/requireUser";
+import { Providers } from "@/components/shared/Providers";
 
 export default async function DashboardLayout({
   children,
@@ -13,12 +14,14 @@ export default async function DashboardLayout({
   const sidebar = await getSidebarData();
 
   return (
-    <div className="bg-bg-primary text-text-primary flex flex-col h-screen w-full font-sans overflow-hidden">
-      <DashboardNavbar sidebar={sidebar} />
-      <div className="flex flex-1 min-h-0">
-        <Sidebar data={sidebar} />
-        <main className="flex-1 overflow-y-auto">{children}</main>
+    <Providers>
+      <div className="bg-bg-primary text-text-primary flex flex-col h-screen w-full font-sans overflow-hidden">
+        <DashboardNavbar sidebar={sidebar} />
+        <div className="flex flex-1 min-h-0">
+          <Sidebar data={sidebar} />
+          <main className="flex-1 overflow-y-auto">{children}</main>
+        </div>
       </div>
-    </div>
+    </Providers>
   );
 }
