@@ -4,6 +4,7 @@ import type { ArticleItem } from "./FeedItem";
 
 // How many posts the dashboard shows (newest first). Nothing else is hidden or deleted.
 const FEED_LIMIT = 10;
+export type SortOrder = "newest" | "oldest";
 
 function unwrap<T>(value: T | T[] | null | undefined): T | undefined {
   return Array.isArray(value) ? value[0] : (value ?? undefined);
@@ -12,6 +13,7 @@ function unwrap<T>(value: T | T[] | null | undefined): T | undefined {
 export async function getFeedItems(
   supabase: Awaited<ReturnType<typeof createClient>>,
   userId: string,
+  sort: SortOrder = "newest",
 ): Promise<ArticleItem[]> {
   const { data, error } = await supabase
     .from("feed_items")
@@ -38,12 +40,12 @@ export async function getFeedItems(
     `,
     )
     .eq("feeds.user_feeds.user_id", userId)
-    .order("published_at", { ascending: false })
+    .order("published_at", { ascending: sort === "oldest", nullsFirst: false })
+    .order("id", { ascending: sort === "oldest" })
     .limit(FEED_LIMIT);
 
   if (error) {
-    console.error("feed items fetch failed:", error);
-    return [];
+    throw new Error(`feed items fetch failed: ${error.message}`);
   }
 
   return data.map((item) => {
