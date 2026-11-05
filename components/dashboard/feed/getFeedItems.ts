@@ -3,7 +3,7 @@ import { sanitizeUrl } from "@/lib/sanitizeUrl";
 import type { ArticleItem } from "./FeedItem";
 
 // How many posts the dashboard shows (newest first). Nothing else is hidden or deleted.
-const FEED_LIMIT = 10;
+const FEED_LIMIT = 24;
 export type SortOrder = "newest" | "oldest";
 
 function unwrap<T>(value: T | T[] | null | undefined): T | undefined {
