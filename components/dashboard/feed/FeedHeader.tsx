@@ -5,16 +5,23 @@ import MarkAllReadButton from "./MarkAllReadButton";
 import RefreshButton from "./RefreshButton";
 import type { SortOrder } from "./getFeedItems";
 
+import ViewButton from "./ViewButton";
+import type { FeedView } from "./feedView";
+
 type FeedHeaderProps = {
   unreadCount: number;
   sort: SortOrder;
   onSortChange: (sort: SortOrder) => void;
+  view: FeedView;
+  onViewChange: (view: FeedView) => void;
 };
 
 export default function FeedHeader({
   unreadCount,
   sort,
   onSortChange,
+  view,
+  onViewChange,
 }: FeedHeaderProps) {
   return (
     <header className="flex items-center justify-between w-full border-b border-border px-3 sm:px-6 py-3 sm:py-4">
@@ -31,16 +38,28 @@ export default function FeedHeader({
       {/* Actions */}
       <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
         {/* View Toggle — hidden on mobile */}
-        <div className="hidden sm:flex overflow-hidden rounded-md border border-border cursor-pointer">
-          <button className="bg-surface-secondary p-2.5 cursor-pointer">
+        <div className="hidden sm:flex overflow-hidden rounded-md border border-border divide-x divide-border">
+          <ViewButton
+            view="list"
+            label="List view"
+            isActive={view === "list"}
+            onSelect={onViewChange}>
             <List className="h-4 w-4" />
-          </button>
-          <button className="border-l border-border p-2.5 cursor-pointer">
+          </ViewButton>
+          <ViewButton
+            view="card"
+            label="Card view"
+            isActive={view === "card"}
+            onSelect={onViewChange}>
             <LayoutGrid className="h-4 w-4" />
-          </button>
-          <button className="border-l border-border p-2.5 cursor-pointer">
+          </ViewButton>
+          <ViewButton
+            view="compact"
+            label="Compact view"
+            isActive={view === "compact"}
+            onSelect={onViewChange}>
             <AlignJustify className="h-4 w-4" />
-          </button>
+          </ViewButton>
         </div>
 
         {/* Sort: click to flip between newest and oldest */}

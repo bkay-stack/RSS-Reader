@@ -7,6 +7,7 @@ import FeedHeader from "./FeedHeader";
 import FeedList from "./FeedList";
 import type { ArticleItem } from "./FeedItem";
 import type { SortOrder } from "./getFeedItems";
+import type { FeedView } from "./feedView";
 
 type FeedClientProps = {
   userId: string;
@@ -36,6 +37,8 @@ export default function FeedClient({
   children,
 }: FeedClientProps) {
   const [sort, setSort] = useState<SortOrder>("newest");
+  // const [sort, setSort] = useState<SortOrder>("newest");
+  const [view, setView] = useState<FeedView>("list");
 
   const {
     data: items,
@@ -55,6 +58,8 @@ export default function FeedClient({
         unreadCount={unreadCount}
         sort={sort}
         onSortChange={setSort}
+        view={view}
+        onViewChange={setView}
       />
 
       {children}
@@ -71,7 +76,7 @@ export default function FeedClient({
         </p>
       )}
 
-      <FeedList items={items ?? []} />
+      <FeedList items={items ?? []} view={view} />
     </section>
   );
 }
