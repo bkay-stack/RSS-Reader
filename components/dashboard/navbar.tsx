@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Suspense } from "react";
 import type { SidebarData } from "./getSidebarData";
 import SearchInput from "./SearchInput";
-
+import AcountMenu from "./account/AccountMenu";
 const navLinks = [
   { href: "/dashboard", label: "Feed" },
   { href: "/dashboard/digest", label: "Digest" },
@@ -30,14 +30,18 @@ export default function DashboardNavbar({ sidebar }: { sidebar: SidebarData }) {
           ))}
         </ul>
       </div>
+      <div className="flex items-center gap-5">
+        {/* Search bar */}
+        <Suspense
+          fallback={
+            <div className="hidden md:block h-8 w-56 rounded border border-border" />
+          }>
+          <SearchInput className="hidden md:flex" />
+        </Suspense>
 
-      {/* Search bar */}
-      <Suspense
-        fallback={
-          <div className="hidden md:block h-8 w-56 rounded border border-border" />
-        }>
-        <SearchInput className="hidden md:flex" />
-      </Suspense>
+        {/* Profile */}
+        <AcountMenu />
+      </div>
     </nav>
   );
 }
