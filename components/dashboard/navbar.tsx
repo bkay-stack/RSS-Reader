@@ -1,8 +1,9 @@
 import Logo from "@/components/branding/logo";
 import MobileSidebarDrawer from "./MobileSidebarDrawer";
 import Link from "next/link";
-import { Search } from "lucide-react";
+import { Suspense } from "react";
 import type { SidebarData } from "./getSidebarData";
+import SearchInput from "./SearchInput";
 
 const navLinks = [
   { href: "/dashboard", label: "Feed" },
@@ -31,19 +32,12 @@ export default function DashboardNavbar({ sidebar }: { sidebar: SidebarData }) {
       </div>
 
       {/* Search bar */}
-      <div className="hidden md:flex items-center gap-2  px-3 py-1.5 text-sm text-text-tertiary">
-        <form
-          action="/dashboard/search"
-          className="hidden md:flex items-center gap-2 rounded border border-border px-3 py-1.5 text-sm text-text-tertiary focus-within:border-accent focus-within:text-text-primary transition-colors">
-          <Search size={16} className="shrink-0" />
-          <input
-            type="search"
-            name="q"
-            placeholder="Search articles..."
-            className="bg-transparent outline-none placeholder:text-text-tertiary text-text-primary w-40"
-          />
-        </form>
-      </div>
+      <Suspense
+        fallback={
+          <div className="hidden md:block h-8 w-56 rounded border border-border" />
+        }>
+        <SearchInput className="hidden md:flex" />
+      </Suspense>
     </nav>
   );
 }

@@ -14,8 +14,9 @@ export async function getFeedItems(
   supabase: Awaited<ReturnType<typeof createClient>>,
   userId: string,
   sort: SortOrder = "newest",
+  options: { ids?: string[] } = {},
 ): Promise<ArticleItem[]> {
-  const { data, error } = await supabase
+  const base = supabase
     .from("feed_items")
     .select(
       `
@@ -39,10 +40,17 @@ export async function getFeedItems(
       )
     `,
     )
-    .eq("feeds.user_feeds.user_id", userId)
-    .order("published_at", { ascending: sort === "oldest", nullsFirst: false })
-    .order("id", { ascending: sort === "oldest" })
-    .limit(FEED_LIMIT);
+    .eq("feeds.user_feeds.user_id", userId);
+
+  const { data, error } = options.ids
+    ? await base.in("id", options.ids) // search: exactly these posts
+    : await base
+        .order("published_at", {
+          ascending: sort === "oldest",
+          nullsFirst: false,
+        })
+        .order("id", { ascending: sort === "oldest" })
+        .limit(FEED_LIMIT);
 
   if (error) {
     throw new Error(`feed items fetch failed: ${error.message}`);
