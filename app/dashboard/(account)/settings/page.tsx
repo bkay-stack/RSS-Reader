@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import type { ReactNode } from "react";
+import { useTheme } from "next-themes";
 import {
   ArrowLeft,
   ArrowRight,
@@ -151,10 +152,21 @@ function Divider() {
   return <div className="h-px bg-border" />;
 }
 
+const subscribe = () => () => {};
+
+function useMounted() {
+  return useSyncExternalStore(
+    subscribe,
+    () => true, // browser
+    () => false, // server and hydration
+  );
+}
+
 /* ---------- Page ---------- */
 
 export default function SettingsPage() {
-  const [theme, setTheme] = useState<Theme>("light");
+  const { theme, setTheme } = useTheme();
+  const mounted = useMounted();
   const [fontSize, setFontSize] = useState(14);
 
   const [markAsRead, setMarkAsRead] = useState(true);
@@ -187,7 +199,7 @@ export default function SettingsPage() {
 
   function handleThemeChange(value: Theme) {
     setTheme(value);
-    notify(`${value} theme selected`);
+    notify(`${value.charAt(0).toUpperCase()}${value.slice(1)} theme selected`);
   }
 
   function handleFontSizeChange(value: number) {
@@ -315,7 +327,7 @@ export default function SettingsPage() {
               ] as const
             ).map((option) => {
               const Icon = option.icon;
-              const isActive = theme === option.value;
+              const isActive = mounted && theme === option.value;
 
               return (
                 <button
