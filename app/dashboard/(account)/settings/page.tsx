@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
+import { useTheme } from "next-themes";
 import {
   ArrowLeft,
   ArrowRight,
@@ -154,7 +155,8 @@ function Divider() {
 /* ---------- Page ---------- */
 
 export default function SettingsPage() {
-  const [theme, setTheme] = useState<Theme>("light");
+  const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
   const [fontSize, setFontSize] = useState(14);
 
   const [markAsRead, setMarkAsRead] = useState(true);
@@ -172,6 +174,10 @@ export default function SettingsPage() {
   const [toast, setToast] = useState("");
 
   useEffect(() => {
+    setMounted(true);
+  }, [mounted]);
+
+  useEffect(() => {
     if (!toast) return;
 
     const timeout = window.setTimeout(() => {
@@ -187,7 +193,7 @@ export default function SettingsPage() {
 
   function handleThemeChange(value: Theme) {
     setTheme(value);
-    notify(`${value} theme selected`);
+    notify(`${value.charAt(0).toUpperCase()}${value.slice(1)} theme selected`);
   }
 
   function handleFontSizeChange(value: number) {
@@ -315,7 +321,7 @@ export default function SettingsPage() {
               ] as const
             ).map((option) => {
               const Icon = option.icon;
-              const isActive = theme === option.value;
+              const isActive = mounted && theme === option.value;
 
               return (
                 <button
