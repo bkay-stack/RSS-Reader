@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import type { ReactNode } from "react";
 import { useTheme } from "next-themes";
 import {
@@ -152,11 +152,21 @@ function Divider() {
   return <div className="h-px bg-border" />;
 }
 
+const subscribe = () => () => {};
+
+function useMounted() {
+  return useSyncExternalStore(
+    subscribe,
+    () => true, // browser
+    () => false, // server and hydration
+  );
+}
+
 /* ---------- Page ---------- */
 
 export default function SettingsPage() {
   const { theme, setTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
+  const mounted = useMounted();
   const [fontSize, setFontSize] = useState(14);
 
   const [markAsRead, setMarkAsRead] = useState(true);
@@ -172,10 +182,6 @@ export default function SettingsPage() {
   const [isSyncing, setIsSyncing] = useState(false);
   const [cacheCleared, setCacheCleared] = useState(false);
   const [toast, setToast] = useState("");
-
-  useEffect(() => {
-    setMounted(true);
-  }, [mounted]);
 
   useEffect(() => {
     if (!toast) return;
