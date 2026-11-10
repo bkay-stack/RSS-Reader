@@ -52,7 +52,7 @@ export default function ProfilePage() {
       {/* Page Header */}
       <header className="flex items-center gap-3">
         <Link
-          href="/dashboard"
+          href="/"
           aria-label="Back to dashboard"
           className="rounded-lg p-2 text-text-secondary transition-colors duration-200 hover:bg-bg-tertiary">
           <ArrowLeft className="h-5 w-5" />
